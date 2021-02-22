@@ -8,7 +8,7 @@ import {
 import { AppProvider, ErrorPage, PageRoute } from '@edx/frontend-platform/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import Footer, { messages as footerMessages } from '@edx/frontend-component-footer';
 
@@ -27,43 +27,49 @@ import { TabContainer } from './tab-page';
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
 import initializeStore from './store';
+import NexBlockContainer from './nexblocks/NexBlockContainer';
+import PluginTestPage from './plugin-test/PluginTestPage';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider store={initializeStore()}>
       <UserMessagesProvider>
         <Switch>
-          <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
-          <PageRoute path="/course/:courseId/home">
-            <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
-              <OutlineTab />
-            </TabContainer>
-          </PageRoute>
-          <PageRoute path="/course/:courseId/dates">
-            <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
-              <DatesTab />
-            </TabContainer>
-          </PageRoute>
-          <PageRoute path="/course/:courseId/progress">
-            <TabContainer tab="progress" fetch={fetchProgressTab} slice="courseHome">
-              <ProgressTab />
-            </TabContainer>
-          </PageRoute>
-          <PageRoute path="/course/:courseId/course-end">
-            <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
-              <CourseExit />
-            </TabContainer>
-          </PageRoute>
-          <PageRoute
-            path={[
-              '/course/:courseId/:sequenceId/:unitId',
-              '/course/:courseId/:sequenceId',
-              '/course/:courseId',
-            ]}
-            component={CoursewareContainer}
-          />
+          <Route exact path="/nexblock" component={NexBlockContainer} />
+          <Switch>
+            <Route exact path="/plugin-test" component={PluginTestPage} />
+            <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
+            <PageRoute path="/course/:courseId/home">
+              <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
+                <OutlineTab />
+              </TabContainer>
+            </PageRoute>
+            <PageRoute path="/course/:courseId/dates">
+              <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
+                <DatesTab />
+              </TabContainer>
+            </PageRoute>
+            <PageRoute path="/course/:courseId/progress">
+              <TabContainer tab="progress" fetch={fetchProgressTab} slice="courseHome">
+                <ProgressTab />
+              </TabContainer>
+            </PageRoute>
+            <PageRoute path="/course/:courseId/course-end">
+              <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
+                <CourseExit />
+              </TabContainer>
+            </PageRoute>
+            <PageRoute
+              path={[
+                '/course/:courseId/:sequenceId/:unitId',
+                '/course/:courseId/:sequenceId',
+                '/course/:courseId',
+              ]}
+              component={CoursewareContainer}
+            />
+          </Switch>
+          <Footer />
         </Switch>
-        <Footer />
       </UserMessagesProvider>
     </AppProvider>,
     document.getElementById('root'),
