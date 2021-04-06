@@ -12,21 +12,21 @@ import { UpgradeButton } from '../../../generic/upgrade-button';
 
 function UpsellNoFBECardContent() {
   return (
-    <ul className="fa-ul">
+    <ul className="fa-ul upgradeCard-ul pt-0">
       <li>
-        <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
+        <span className="fa-li upgradeCard-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
           id="learning.outline.alert.upgradecard.verifiedCertLink"
           defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
           values={{
             verifiedCertLink: (
-              <a className="inline-link-underline" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>verified certificate</a>
+              <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>verified certificate</a>
             ),
           }}
         />
       </li>
       <li>
-        <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
+        <span className="fa-li upgradeCard-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
           id="learning.outline.alert.upgradecard.nonProfitMission"
           defaultMessage="Support our {nonProfitMission} at edX"
@@ -43,21 +43,21 @@ function UpsellNoFBECardContent() {
 
 function UpsellFBEFarAwayCardContent() {
   return (
-    <ul className="fa-ul">
+    <ul className="fa-ul upgradeCard-ul">
       <li>
-        <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
+        <span className="fa-li upgradeCard-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
           id="learning.outline.alert.upgradecard.verifiedCertLink"
           defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
           values={{
             verifiedCertLink: (
-              <a className="inline-link-underline" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>verified certificate</a>
+              <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>verified certificate</a>
             ),
           }}
         />
       </li>
       <li>
-        <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
+        <span className="fa-li upgradeCard-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
           id="learning.outline.alert.upgradecard.unlock-graded"
           defaultMessage="Unlock your access to all course activities, including {gradedAssignments}"
@@ -69,7 +69,7 @@ function UpsellFBEFarAwayCardContent() {
         />
       </li>
       <li>
-        <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
+        <span className="fa-li upgradeCard-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
           id="learning.outline.alert.upgradecard.fullAccess"
           defaultMessage="{fullAccess} to course content and materials, even after the course ends"
@@ -81,7 +81,7 @@ function UpsellFBEFarAwayCardContent() {
         />
       </li>
       <li>
-        <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
+        <span className="fa-li upgradeCard-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
           id="learning.outline.alert.upgradecard.nonProfitMission"
           defaultMessage="Support our {nonProfitMission} at edX"
@@ -98,7 +98,7 @@ function UpsellFBEFarAwayCardContent() {
 
 function UpsellFBESoonCardContent({ accessExpirationDate, timezoneFormatArgs }) {
   return (
-    <div>
+    <div class="upgradeCard-text">
       <p>
         <FormattedMessage
           id="learning.outline.alert.upgradecard.expirationAccessLoss"
@@ -122,7 +122,7 @@ function UpsellFBESoonCardContent({ accessExpirationDate, timezoneFormatArgs }) 
           id="learning.outline.alert.upgradecard.expirationVerifiedCert"
           defaultMessage="Upgrading your course enables you to pursue a verified certificate and unlocks numerous features. Learn more about the {benefitsOfUpgrading}."
           values={{
-            benefitsOfUpgrading: (<a className="inline-link-underline" rel="noopener noreferrer" target="_blank" href="https://support.edx.org/hc/en-us/articles/360013426573-What-are-the-differences-between-audit-free-and-verified-paid-courses-">benefits of upgrading</a>),
+            benefitsOfUpgrading: (<a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href="https://support.edx.org/hc/en-us/articles/360013426573-What-are-the-differences-between-audit-free-and-verified-paid-courses-">benefits of upgrading</a>),
           }}
         />
       </p>
@@ -176,7 +176,7 @@ function ExpirationCountdown({ hoursToExpiration }) {
       />
     );
   }
-  return (<div className="p-3 upsell-warning">{expirationText}</div>);
+  return (<div className="upsell-warning">{expirationText}</div>);
 }
 
 ExpirationCountdown.propTypes = {
@@ -185,7 +185,7 @@ ExpirationCountdown.propTypes = {
 
 function AccessExpirationDateBanner({ accessExpirationDate, timezoneFormatArgs }) {
   return (
-    <div className="p-3 upsell-warning-light">
+    <div className="upsell-warning-light">
       <FormattedMessage
         id="learning.outline.alert.upgradecard.expirationr"
         defaultMessage="Course access will expire {date}"
@@ -216,20 +216,15 @@ AccessExpirationDateBanner.defaultProps = {
   timezoneFormatArgs: {},
 };
 
-function UpgradeCard({ courseId }) {
-  const { org } = useModel('courseHomeMeta', courseId);
-  const {
-    offer,
-    verifiedMode,
-    accessExpiration,
-    datesBannerInfo: {
-      contentTypeGatingEnabled,
-    },
-    datesWidget: {
-      userTimezone,
-    },
-    timeOffsetMillis,
-  } = useModel('outline', courseId);
+function UpgradeCard({ 
+  accessExpiration,
+  contentTypeGatingEnabled,
+  courseId, 
+  offer,
+  org,
+  timeOffsetMillis,
+  userTimezone,
+  verifiedMode, }) {
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
   const correctedTime = new Date(Date.now() + timeOffsetMillis);
@@ -300,7 +295,7 @@ function UpgradeCard({ courseId }) {
       expirationBanner = <ExpirationCountdown hoursToExpiration={hoursToDiscountExpiration} />;
       upsellMessage = <UpsellFBEFarAwayCardContent />;
       offerCode = (
-        <div className="bg-light p-3 text-center discount-info">
+        <div className="p-3 text-center discount-info">
           <FormattedMessage
             id="learning.outline.alert.upgradecard.code"
             defaultMessage="Use code {code} at checkout"
@@ -355,19 +350,19 @@ function UpgradeCard({ courseId }) {
   }
 
   return (
-    <section className="mb-4 card">
-      <h2 className="h5 m-3" id="outline-sidebar-upgrade-header">
+    <section className="mb-4 card upgrade-card small">
+      <h2 className="h5 upgrade-card-header" id="outline-sidebar-upgrade-header">
         {upgradeCardHeaderText}
       </h2>
       {expirationBanner}
-      <div className="p-3">
+      <div className="upgrade-card-message">
         {upsellMessage}
       </div>
       <UpgradeButton
         offer={offer}
         onClick={logClick}
         verifiedMode={verifiedMode}
-        className="ml-3 mr-3 mb-3"
+        className="upgradeCard-upgradeButton"
       />
       {offerCode}
     </section>
