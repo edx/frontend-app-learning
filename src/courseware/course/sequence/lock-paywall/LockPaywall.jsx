@@ -1,22 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import {
-  Alert, Icon,
-} from '@edx/paragon';
+import { Alert } from '@edx/paragon';
 import { Locked } from '@edx/paragon/icons';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/edX_locked_certificate.png';
 import { useModel } from '../../../../generic/model-store';
+import useWindowSize, { responsiveBreakpoints } from '../../../../generic/tabs/useWindowSize';
 import { UpgradeButton } from '../../../../generic/upgrade-button';
 import './LockPaywall.scss';
 
 function LockPaywall({
   intl,
   courseId,
+  notificationTrayVisible,
 }) {
   const course = useModel('coursewareMeta', courseId);
   const {
@@ -24,6 +25,8 @@ function LockPaywall({
     org,
     verifiedMode,
   } = course;
+
+  const shouldDisplayGatedContentResponsive = useWindowSize().width <= responsiveBreakpoints.medium.minWidth;
 
   if (!verifiedMode) {
     return null;
@@ -43,14 +46,6 @@ function LockPaywall({
       pageName: 'in_course',
     });
   };
-
-  const lockIcon = (
-    <Icon
-      className="float-left"
-      src={Locked}
-      aria-hidden="true"
-    />
-  );
 
   const verifiedCertLink = (
     <Alert.Link
@@ -79,12 +74,8 @@ function LockPaywall({
   );
 
   return (
-    <Alert variant="light" aria-live="off">
+    <Alert variant="light" aria-live="off" icon={Locked} className="lock-paywall-container">
       <div className="row">
-        <div className="col-auto px-0">
-          {lockIcon}
-        </div>
-
         <div className="col">
           <h4 aria-level="3">
             <span>{intl.formatMessage(messages['learn.lockPaywall.title'])}</span>
@@ -94,7 +85,7 @@ function LockPaywall({
             {intl.formatMessage(messages['learn.lockPaywall.content'])}
           </div>
 
-          <div className="d-flex flex-row flex-wrap">
+          <div className={classNames('d-flex flex-row', { 'flex-wrap': notificationTrayVisible || shouldDisplayGatedContentResponsive })}>
             <div style={{ float: 'left' }} className="mr-3 mb-2">
               <img
                 alt={intl.formatMessage(messages['learn.lockPaywall.example.alt'])}
@@ -148,7 +139,7 @@ function LockPaywall({
         </div>
 
         <div
-          className="col-md-auto p-md-0 d-md-flex align-items-md-center mr-md-3"
+          className={classNames('p-md-0 d-md-flex align-items-md-center', { 'col-md-5 mx-md-0': notificationTrayVisible, 'col-md-4 mx-md-3': !notificationTrayVisible })}
           style={{ textAlign: 'right' }}
         >
           <UpgradeButton
@@ -164,5 +155,6 @@ function LockPaywall({
 LockPaywall.propTypes = {
   intl: intlShape.isRequired,
   courseId: PropTypes.string.isRequired,
+  notificationTrayVisible: PropTypes.bool.isRequired,
 };
 export default injectIntl(LockPaywall);
