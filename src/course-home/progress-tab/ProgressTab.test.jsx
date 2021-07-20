@@ -281,7 +281,7 @@ describe('Progress Tab', () => {
       expect(screen.getAllByRole('link', 'Unlock now')).toHaveLength(3);
     });
 
-    it('sends event on click of upgrade button in locked content header (CourseGradeHeader)', async () => {
+    it('sends events on click of upgrade button in locked content header (CourseGradeHeader)', async () => {
       sendTrackEvent.mockClear();
       setTabData({
         completion_summary: {
@@ -330,6 +330,14 @@ describe('Progress Tab', () => {
         org_key: 'edX',
         courserun_key: courseId,
         is_staff: false,
+      });
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        linkCategory: '(none)',
+        linkName: 'progress_locked',
+        linkType: 'button',
+        pageName: 'progress',
       });
     });
 
@@ -1099,6 +1107,14 @@ describe('Progress Tab', () => {
           courserun_key: courseId,
           is_staff: false,
           certificate_status_variant: 'audit_passing',
+        });
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          linkCategory: '(none)',
+          linkName: 'progress_certificate',
+          linkType: 'button',
+          pageName: 'progress',
         });
       });
 

@@ -46,6 +46,12 @@ function CertificateStatus({ intl }) {
     isEnrolled,
     userHasPassingGrade,
   );
+
+  const eventProperties = {
+    org_key: org,
+    courserun_key: courseId,
+  };
+
   const dispatch = useDispatch();
   const { administrator } = getAuthenticatedUser();
 
@@ -197,6 +203,13 @@ function CertificateStatus({ intl }) {
       courserun_key: courseId,
       is_staff: administrator,
       certificate_status_variant: certEventName,
+    });
+    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
+      ...eventProperties,
+      linkCategory: '(none)',
+      linkName: 'progress_certificate',
+      linkType: 'button',
+      pageName: 'progress',
     });
   };
 
