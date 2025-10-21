@@ -17,12 +17,12 @@ jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({
   ...jest.requireActual('@edx/frontend-lib-special-exams/dist/data/thunks.js'),
   checkExamEntry: () => jest.fn(),
 }));
-const mockChatTestId = 'fake-chat';
+const mockLearnerToolsTestId = 'fake-learner-tools';
 jest.mock(
-  './chat/Chat',
+  './learner-tools/LearnerTools',
   // eslint-disable-next-line react/prop-types
   () => function ({ courseId }) {
-    return <div className="fake-chat" data-testid={mockChatTestId}>Chat contents {courseId} </div>;
+    return <div className="fake-learner-tools" data-testid={mockLearnerToolsTestId}>LearnerTools contents {courseId} </div>;
   },
 );
 
@@ -360,7 +360,7 @@ describe('Course', () => {
     });
   });
 
-  it('displays chat when screen is wide enough (browser)', async () => {
+  it('displays learner tools when screen is wide enough (browser)', async () => {
     const courseMetadata = Factory.build('courseMetadata', {
       learning_assistant_enabled: true,
       enrollment: { mode: 'verified' },
@@ -374,11 +374,11 @@ describe('Course', () => {
       sequenceId,
     };
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-    const chat = screen.queryByTestId(mockChatTestId);
-    waitFor(() => expect(chat).toBeInTheDocument());
+    const learnerTools = screen.queryByTestId(mockLearnerToolsTestId);
+    await waitFor(() => expect(learnerTools).toBeInTheDocument());
   });
 
-  it('does not display chat when screen is too narrow (mobile)', async () => {
+  it('does not display learner tools when screen is too narrow (mobile)', async () => {
     global.innerWidth = breakpoints.extraSmall.minWidth;
     const courseMetadata = Factory.build('courseMetadata', {
       learning_assistant_enabled: true,
@@ -393,7 +393,7 @@ describe('Course', () => {
       sequenceId,
     };
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-    const chat = screen.queryByTestId(mockChatTestId);
-    await expect(chat).not.toBeInTheDocument();
+    const learnerTools = screen.queryByTestId(mockLearnerToolsTestId);
+    await expect(learnerTools).not.toBeInTheDocument();
   });
 });
