@@ -16,8 +16,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v5
 
-      - name: configure remotes
+      - name: configure git
         run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           git remote add -f openedx https://github.com/openedx/frontend-app-learning.git
           git remote rename origin edx
 
@@ -35,15 +37,25 @@ jobs:
   
       - name: Cherry pick target commit onto new branch
         run: |
-          set -e
           BRANCH_NAME="${{ github.actor }}/cherry-pick-${{ steps.commit-info.outputs.hash }}"
           git checkout -b $BRANCH_NAME
-          git cherry-pick ${{ inputs.targetCommitHash }}
-          git push -u edx $BRANCH_NAME
+          git cherry-pick ${{ inputs.targetCommitHash }} 2>&1 | tee cherry_pick_output
+          if [[ ${PIPESTATUS[0]} != 0 ]]; then
+            echo "## Unable to cherry-pick commit" >> $GITHUB_STEP_SUMMARY
+            cat cherry_pick_output >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          git push -u edx $BRANCH_NAME 2>&1 | tee push_output
+          if [[ ${PIPESTATUS[0]} != 0 ]]; then
+            echo "## Unable to push to branch" >> $GITHUB_STEP_SUMMARY
+            cat push_output >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
 
       - name: Open pull request
         env:
-            GITHUB_TOKEN: ${{ github.GITHUB_TOKEN }}
+            GH_TOKEN: ${{ github.token }}
         run: |
           BODY=$(cat <<-EOF 
             This PR cherry-picks commit ${{ steps.commit-info.outputs.hash }} from the openedx repo into the edx fork.
@@ -52,4 +64,12 @@ jobs:
             Date: ${{ steps.commit-info.outputs.date }}
           EOF
           )
-          gh pr create --title "${{ steps.commit-info.outputs.commit_subject }}" --body "$BODY" 
+          gh pr create --title "${{ steps.commit-info.outputs.commit_subject }}" --body "$BODY" 1> pr_url 2> pr_errors
+          if [[ $? == 0 ]]; then
+              echo "## Pull Request Created! 🎉" >> $GITHUB_STEP_SUMMARY
+              echo $(cat pr_url) >> $GITHUB_STEP_SUMMARY
+          else
+              echo "## Pull request creation failed" >> $GITHUB_STEP_SUMMARY
+              echo $(cat pr_errors) >> $GITHUB_STEP_SUMMARY
+              exit 1
+          fi
