@@ -6,6 +6,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { useModel } from '@src/generic/model-store';
 import PageLoading from '@src/generic/PageLoading';
 import { GatedUnitContentMessageSlot } from '../../../../plugin-slots/GatedUnitContentMessageSlot';
+import { AccessLockContentMessageSlot } from '../../../../plugin-slots/AccessLockContentMessageSlot';
 
 import messages from '../messages';
 import HonorCode from '../honor-code';
@@ -26,9 +27,9 @@ const UnitSuspense = ({
 
   return (
     <>
-      {shouldDisplayContentGating && (
+      {(shouldDisplayContentGating || unit.accessRestricted) && (
         <Suspense fallback={<PageLoading srMessage={formatMessage(messages.loadingLockedContent)} />}>
-          <GatedUnitContentMessageSlot courseId={courseId} />
+          {unit.accessRestricted ?  <AccessLockContentMessageSlot courseId={courseId} /> : <GatedUnitContentMessageSlot courseId={courseId} />}
         </Suspense>
       )}
       {shouldDisplayHonorCode && (
