@@ -188,6 +188,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
             completed: block.completion_stat?.completion,
             total: block.completion_stat?.completable_children,
           },
+          isPreview: block.is_preview,
         };
         break;
 
