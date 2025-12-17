@@ -51,6 +51,7 @@ function useCertificateStatusAlert(courseId) {
     certStatus,
     certWebViewUrl,
     certificateAvailableDate,
+    certificateBlockedDueToProctoring,
   } = certData || {};
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');
   const isVerifiedEnrollmentMode = (
@@ -62,7 +63,8 @@ function useCertificateStatusAlert(courseId) {
   if (certWebViewUrl) {
     certURL = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
   }
-  const hasAlertingCertStatus = verifyCertStatusType(certStatus);
+  const hasAlertingCertStatus = verifyCertStatusType(certStatus) && !certificateBlockedDueToProctoring;
+
 
   // Only show if:
   // - there is a known cert status that we want provide status on.

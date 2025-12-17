@@ -62,6 +62,7 @@ const CourseCelebration = () => {
     certStatus,
     certWebViewUrl,
     certificateAvailableDate,
+    certificateBlockedDueToProctoring,
   } = certificateData || {};
 
   const { administrator } = getAuthenticatedUser();
@@ -85,6 +86,18 @@ const CourseCelebration = () => {
   // These cases are taken from the edx-platform `get_cert_data` function found in lms/courseware/views/views.py
   switch (certStatus) {
     case 'downloadable':
+      if (certificateBlockedDueToProctoring) {
+        certHeader = intl.formatMessage(messages.certificateHeaderNotAvailable);
+        message = (
+          <p>
+            {intl.formatMessage(messages.certificateNotAvailableBodyAccessCert)}
+          </p>
+        );
+        visitEvent = 'celebration_with_unavailable_cert';
+        footnote = <DashboardFootnote variant={visitEvent} />;
+        break;
+      }
+
       certHeader = intl.formatMessage(messages.certificateHeaderDownloadable);
       message = (
         <p>

@@ -300,7 +300,8 @@
           "certificate_data": {
             "cert_status": "audit_passing",
             "cert_web_view_url": null,
-            "certificate_available_date": null
+            "certificate_available_date": null,
+            "certificate_blocked_due_to_proctoring": false
           },
           "verify_identity_url": null,
           "verification_status": "none",
