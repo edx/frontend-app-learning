@@ -4,6 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
+Run `/validate` to check all pre-PR requirements locally (lint, types, tests, build, bundle size, commit messages) and get a pass/fail summary with guidance on any failures.
+
 ```bash
 # Development
 npm start                    # Start dev server (standard)
