@@ -29,6 +29,24 @@ npm run types                # tsc --noEmit (TypeScript only)
 npm run i18n_extract         # Extract translation strings
 ```
 
+## Fork and Upgrade Strategy
+
+This repo is a fork of [openedx/frontend-app-learning](https://github.com/openedx/frontend-app-learning) maintained in the `edx` GitHub org. Understanding this relationship is important when authoring changes.
+
+### Release cadence
+
+The open source community authors changes on `openedx/master`. Every ~6 months, these are grouped into a named release branch, tested, and offered to forks. Because we run a large production instance, we pull in upstream changes only when named releases are available — not from `openedx/master` directly.
+
+### Authoring changes
+
+We also author our own changes on this fork to ship features faster than the upstream review process allows. The guiding principle is: **every change should ideally be compatible with upstream and eventually contributed back.**
+
+In practice this means:
+
+- **Prefer plugin slots** — proprietary UI additions should use `@openedx/frontend-plugin-framework` plugin slots ([src/plugin-slots/](src/plugin-slots/)) so they can be injected without modifying core code.
+- **Prefer feature toggles disabled by default** — any behavior that isn't appropriate for the broader open source community should be gated behind a config flag (via `getConfig()` from `@edx/frontend-platform`) that defaults to off, making the change safe to contribute upstream.
+- **Avoid proprietary logic in core paths** — changes that can't be upstreamed should be isolated at the edges (plugin slots, config-gated branches) rather than embedded in shared data/API/redux code.
+
 ## Architecture
 
 This is an OpenEdX Micro-Frontend (MFE) built on `@edx/frontend-platform` and `@openedx/frontend-build`. It serves the learner-facing course experience.
