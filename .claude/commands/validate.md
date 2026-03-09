@@ -24,7 +24,7 @@ Run: `npm run types`
 Run: `npm test -- --passWithNoTests`
 
 ### 5. Build
-Run: `npm run build`
+Run: `npm run build:validate`
 
 ### 6. Bundle size
 Run: `npm run bundlewatch`
