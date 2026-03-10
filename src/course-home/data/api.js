@@ -68,6 +68,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           title: block.display_name,
           hideFromTOC: block.hide_from_toc,
           navigationDisabled: block.navigation_disabled,
+          isPreview: block.is_preview,
         };
         break;
 
@@ -378,4 +379,25 @@ export async function searchCourseContentFromAPI(courseId, searchKeyword, option
   const response = await getAuthenticatedHttpClient().post(url.href, formData);
 
   return camelCaseObject(response);
+}
+
+export async function getExamsData(courseId, sequenceId) {
+  let url;
+
+  if (!getConfig().EXAMS_BASE_URL) {
+    url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/proctored_exam/attempt/course_id/${encodeURIComponent(courseId)}?is_learning_mfe=true&content_id=${encodeURIComponent(sequenceId)}`;
+  } else {
+    url = `${getConfig().EXAMS_BASE_URL}/api/v1/student/exam/attempt/course_id/${encodeURIComponent(courseId)}/content_id/${encodeURIComponent(sequenceId)}`;
+  }
+
+  try {
+    const { data } = await getAuthenticatedHttpClient().get(url);
+    return camelCaseObject(data);
+  } catch (error) {
+    const { httpErrorStatus } = error && error.customAttributes;
+    if (httpErrorStatus === 404) {
+      return {};
+    }
+    throw error;
+  }
 }

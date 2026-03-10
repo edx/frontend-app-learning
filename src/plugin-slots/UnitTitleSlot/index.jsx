@@ -26,7 +26,7 @@ const UnitTitleSlot = ({
     >
       <div className="d-flex justify-content-between">
         <div className="mb-0">
-          <h3 className="h3">{unit.title}</h3>
+          <h1 className="unit-title">{unit.title}</h1>
         </div>
         {renderUnitNavigation(true)}
       </div>
