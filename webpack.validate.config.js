@@ -12,7 +12,7 @@ const prodConfig = require('./webpack.prod.config');
 module.exports = merge(prodConfig, {
   resolve: {
     alias: {
-      'env.config': path.resolve(__dirname, './env.config.validate'),
+      'env.config': path.resolve(__dirname, './env.config.validate.jsx'),
       // TsconfigPathsPlugin doesn't hook correctly on the merged config, so
       // replicate the tsconfig "@src/*" path mapping explicitly.
       '@src': path.resolve(__dirname, 'src'),
