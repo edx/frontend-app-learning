@@ -1,6 +1,6 @@
 const path = require('path');
 const { merge } = require('webpack-merge');
-const prodConfig = require('@openedx/frontend-build/config/webpack.prod.config');
+const prodConfig = require('./webpack.prod.config');
 
 /**
  * Webpack config used by `npm run build:validate`.
