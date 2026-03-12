@@ -7,6 +7,7 @@
       "Bash(npm test -- --passWithNoTests)",
       "Bash(npm run build)",
       "Bash(npm run build:validate)",
+      "Bash(git log -1 --pretty=%B)",
       "Bash(npm run bundlewatch)"
     ]
   }
