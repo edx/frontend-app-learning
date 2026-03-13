@@ -18,6 +18,7 @@ import ContentTools from './content-tools';
 import Sequence from './sequence';
 import { CourseOutlineMobileSidebarTriggerSlot } from '../../plugin-slots/CourseOutlineMobileSidebarTriggerSlot';
 import { CourseBreadcrumbsSlot } from '../../plugin-slots/CourseBreadcrumbsSlot';
+import { CoursewareTopBannerSlot } from '../../plugin-slots/CoursewareTopBannerSlot';
 
 const Course = ({
   courseId,
@@ -108,7 +109,7 @@ const Course = ({
           <NotificationsDiscussionsSidebarTriggerSlot courseId={courseId} />
         </div>
       </div>
-
+      <CoursewareTopBannerSlot courseId={courseId} />
       <AlertList topic="sequence" />
       <Sequence
         unitId={unitId}

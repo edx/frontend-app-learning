@@ -9,6 +9,7 @@
 * [`org.openedx.frontend.learning.course_outline_sidebar_trigger.v1`](./CourseOutlineSidebarTriggerSlot)
 * [`org.openedx.frontend.learning.course_outline_sidebar.v1`](./CourseOutlineSidebarSlot/)
 * [`org.openedx.frontend.learning.course_outline_tab_notifications.v1`](./CourseOutlineTabNotificationsSlot/)
+* [`org.openedx.frontend.learning.courseware_top_banner.v1`](./CoursewareTopBannerSlot/)
 * [`org.openedx.frontend.learning.course_recommendations.v1`](./CourseRecommendationsSlot/)
 * [`org.openedx.frontend.learning.gated_unit_content_message.v1`](./GatedUnitContentMessageSlot/)
 * [`org.openedx.frontend.learning.learner_tools.v1`](./LearnerToolsSlot/)
