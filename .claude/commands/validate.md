@@ -5,7 +5,9 @@ Execute the following checks **in order**, capturing output from each. Continue 
 ## Checks to run
 
 ### 1. Commit messages
-Run: `git log main..HEAD --format="%H %s"`
+Run: `git log release-teak..HEAD --format="%H %s"`
+
+> Note: `release-teak` is the current base branch for PRs in the `edx` fork. Update this (and the matching allow-list entry in `.claude/settings.json`) when the default branch changes.
 
 For each commit, validate the subject line against the conventional commits format:
 `<type>(<optional scope>): <description>`
