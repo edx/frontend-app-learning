@@ -1,4 +1,6 @@
-Run all pre-PR validation checks that mirror CI, then report results.
+Run all pre-PR validation checks and report results.
+
+> Note: The build step uses `npm run build:validate` (with a stub `env.config`) rather than `npm run build`, so the build succeeds without the private edX plugin packages required in production. All other checks match CI.
 
 Execute the following checks **in order**, capturing output from each. Continue through all checks even if one fails — collect all failures before reporting.
 
