@@ -42,7 +42,7 @@ describe('Unit Button', () => {
   });
 
   it('does not show completion for non-completed unit', () => {
-    const { container } = render(<UnitButton {...mockData} />);
+    const { container } = render(<UnitButton {...mockData} />, { wrapWithRouter: true });
     container.querySelectorAll('svg').forEach(icon => {
       expect(icon).not.toHaveClass('fa-check');
     });
@@ -56,14 +56,17 @@ describe('Unit Button', () => {
   });
 
   it('hides completion', () => {
-    const { container } = render(<UnitButton {...mockData} unitId={completedUnit.id} showCompletion={false} />);
+    const { container } = render(
+      <UnitButton {...mockData} unitId={completedUnit.id} showCompletion={false} />,
+      { wrapWithRouter: true },
+    );
     container.querySelectorAll('svg').forEach(icon => {
       expect(icon).not.toHaveClass('fa-check');
     });
   });
 
   it('does not show bookmark', () => {
-    const { queryByTestId } = render(<UnitButton {...mockData} />);
+    const { queryByTestId } = render(<UnitButton {...mockData} />, { wrapWithRouter: true });
     expect(queryByTestId('bookmark-icon')).toBeNull();
   });
 

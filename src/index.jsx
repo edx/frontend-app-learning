@@ -160,6 +160,7 @@ subscribe(APP_READY, () => {
 });
 
 subscribe(APP_INIT_ERROR, (error) => {
+  handleRtl();
   const root = createRoot(document.getElementById('root'));
 
   root.render(

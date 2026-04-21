@@ -1,6 +1,7 @@
 import {
   APP_INIT_ERROR, APP_READY, subscribe,
 } from '@edx/frontend-platform';
+import { LOCALE_CHANGED } from '@edx/frontend-platform/i18n';
 
 // Jest needs this for module resolution
 import * as app from '.'; // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -9,6 +10,7 @@ import * as app from '.'; // eslint-disable-line @typescript-eslint/no-unused-va
 // and can be used by jest.mock (which is also hoisted)
 var mockRender; // eslint-disable-line no-var
 var mockCreateRoot; // eslint-disable-line no-var
+var mockHandleRtl; // eslint-disable-line no-var
 jest.mock('react-dom/client', () => {
   mockRender = jest.fn();
   mockCreateRoot = jest.fn(() => ({
@@ -18,6 +20,14 @@ jest.mock('react-dom/client', () => {
   return ({
     createRoot: mockCreateRoot,
   });
+});
+
+jest.mock('@edx/frontend-platform/i18n', () => {
+  mockHandleRtl = jest.fn();
+  return {
+    LOCALE_CHANGED: 'LOCALE.CHANGED',
+    handleRtl: mockHandleRtl,
+  };
 });
 
 jest.mock('react', () => ({
@@ -54,9 +64,16 @@ jest.mock('./courseware', () => 'Courseware Container');
 describe('app registry', () => {
   let getElement;
 
+  const getSubscriptionCallback = (eventKey) => {
+    const callArgs = subscribe.mock.calls.find(([event]) => event === eventKey);
+    expect(callArgs).toBeDefined();
+    return callArgs[1];
+  };
+
   beforeEach(() => {
     mockCreateRoot.mockClear();
     mockRender.mockClear();
+    mockHandleRtl.mockClear();
 
     getElement = window.document.getElementById;
     window.document.getElementById = jest.fn(id => ({ id }));
@@ -65,18 +82,26 @@ describe('app registry', () => {
     window.document.getElementById = getElement;
   });
 
+
+  test('subscribe: LOCALE_CHANGED. invokes handleRtl', () => {
+    const callback = getSubscriptionCallback(LOCALE_CHANGED);
+    callback();
+    expect(mockHandleRtl).toHaveBeenCalledTimes(1);
+  });
+
   test('subscribe: APP_READY.  links App to root element', () => {
-    const callArgs = subscribe.mock.calls[0];
-    expect(callArgs[0]).toEqual(APP_READY);
-    callArgs[1]();
+    const callback = getSubscriptionCallback(APP_READY);
+    callback();
+    expect(mockHandleRtl).toHaveBeenCalledTimes(1);
     const [rendered] = mockRender.mock.calls[0];
     expect(rendered).toMatchSnapshot();
   });
+
   test('subscribe: APP_INIT_ERROR.  snapshot: displays an ErrorPage to root element', () => {
-    const callArgs = subscribe.mock.calls[1];
-    expect(callArgs[0]).toEqual(APP_INIT_ERROR);
+    const callback = getSubscriptionCallback(APP_INIT_ERROR);
     const error = { message: 'test-error-message' };
-    callArgs[1](error);
+    callback(error);
+    expect(mockHandleRtl).toHaveBeenCalledTimes(1);
     const [rendered] = mockRender.mock.calls[0];
     expect(rendered).toMatchSnapshot();
   });
