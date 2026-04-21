@@ -3,6 +3,7 @@ import {
   mergeConfig,
   getConfig,
 } from '@edx/frontend-platform';
+import { handleRtl, LOCALE_CHANGED } from '@edx/frontend-platform/i18n';
 import { AppProvider, ErrorPage, PageWrap } from '@edx/frontend-platform/react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -37,7 +38,12 @@ import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
 
+subscribe(LOCALE_CHANGED, () => {
+  handleRtl();
+});
+
 subscribe(APP_READY, () => {
+  handleRtl();
   const root = createRoot(document.getElementById('root'));
 
   root.render(
