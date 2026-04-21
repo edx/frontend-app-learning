@@ -82,7 +82,6 @@ describe('app registry', () => {
     window.document.getElementById = getElement;
   });
 
-
   test('subscribe: LOCALE_CHANGED. invokes handleRtl', () => {
     const callback = getSubscriptionCallback(LOCALE_CHANGED);
     callback();
