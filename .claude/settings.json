@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run lint -- --max-warnings 0)",
+      "Bash(npm run types)",
+      "Bash(npm test -- --passWithNoTests)",
+      "Bash(npm run build)",
+      "Bash(npm run build:validate)",
+      "Bash(git log -1 --pretty=%B)",
+      "Bash(git log release-teak..HEAD --format=\"%H %s\")",
+      "Bash(npm run bundlewatch)"
+    ]
+  }
+}
