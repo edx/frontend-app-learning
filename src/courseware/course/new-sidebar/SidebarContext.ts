@@ -26,10 +26,14 @@ export interface SidebarContextData {
   shouldDisplayFullScreen: boolean;
   courseId: string;
   unitId: string;
+  /** Set of panel IDs enabled via config */
+  enabledPanels: string[];
+  isDiscussionbarAvailable: boolean;
+  isUpsellAvailable: boolean;
+  // BACKWARD COMPAT
   hideDiscussionbar: boolean;
   hideNotificationbar: boolean;
   isNotificationbarAvailable: boolean;
-  isDiscussionbarAvailable: boolean;
 }
 
 const SidebarContext = React.createContext<SidebarContextData>({} as SidebarContextData);

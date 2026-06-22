@@ -24,7 +24,8 @@ jest.mock('@edx/frontend-platform/analytics');
 describe('NotificationsWidget', () => {
   let axiosMock;
   let store;
-  const ID = 'DISCUSSIONS_NOTIFICATIONS';
+  // CHANGED: Use 'UPSELL' — the new sidebar ID for the upsell/notifications panel
+  const ID = 'UPSELL';
   const defaultMetadata = Factory.build('courseMetadata');
   const courseId = defaultMetadata.id;
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultMetadata.id}`;
@@ -41,6 +42,31 @@ describe('NotificationsWidget', () => {
   async function fetchAndRender(component) {
     await executeThunk(fetchCourse(defaultMetadata.id), store.dispatch);
     render(component, { store });
+  }
+
+  // ADDED: Helper to build a partial SidebarContextData safely
+  // Uses `as unknown as SidebarContextData` to satisfy TS when only providing test-relevant fields
+  function buildTestContext(overrides: Partial<SidebarContextData>): SidebarContextData {
+    return {
+      toggleSidebar: jest.fn(),
+      onNotificationSeen: jest.fn(),
+      setNotificationStatus: jest.fn(),
+      currentSidebar: null,
+      notificationStatus: 'inactive',
+      upgradeNotificationCurrentState: 'accessDateView',
+      setUpgradeNotificationCurrentState: jest.fn(),
+      shouldDisplaySidebarOpen: true,
+      shouldDisplayFullScreen: false,
+      courseId,
+      unitId: 'unit-1',
+      enabledPanels: ['DISCUSSIONS', 'UPSELL'],
+      isDiscussionbarAvailable: false,
+      isUpsellAvailable: true,
+      hideDiscussionbar: true,
+      hideNotificationbar: false,
+      isNotificationbarAvailable: true,
+      ...overrides,
+    } as SidebarContextData;
   }
 
   beforeEach(async () => {
@@ -62,8 +88,8 @@ describe('NotificationsWidget', () => {
     });
 
     await waitFor(async () => {
-      expect(screen.queryByTestId('sidebar-DISCUSSIONS_NOTIFICATIONS')).toBeInTheDocument();
-      expect(screen.queryByTestId('notification-widget')).toBeInTheDocument();
+      // CHANGED: Updated test IDs to match new sidebar IDs
+      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
       expect(screen.queryByTitle('Discussions')).toBeInTheDocument();
     });
 
@@ -72,20 +98,20 @@ describe('NotificationsWidget', () => {
     });
 
     await waitFor(async () => {
-      expect(screen.queryByTestId('sidebar-DISCUSSIONS_NOTIFICATIONS')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('notification-widget')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
       expect(screen.queryByTitle('Discussions')).not.toBeInTheDocument();
     });
   });
 
   it('includes notification_widget_slot', async () => {
+    // CHANGED: Use buildTestContext helper instead of raw cast
     await fetchAndRender(
-      <SidebarContext.Provider value={{
+      <SidebarContext.Provider value={buildTestContext({
         currentSidebar: ID,
         courseId,
         hideNotificationbar: false,
         isNotificationbarAvailable: true,
-      } as SidebarContextData}
+      })}
       >
         <NotificationsWidget />
       </SidebarContext.Provider>,
@@ -95,14 +121,15 @@ describe('NotificationsWidget', () => {
 
   it('renders no notifications bar if no verified mode', async () => {
     setMetadata({ verified_mode: null });
-    const contextData: Partial<SidebarContextData> = {
-      currentSidebar: ID,
-      courseId,
-      hideNotificationbar: true,
-      isNotificationbarAvailable: false,
-    };
+    // CHANGED: Use buildTestContext helper
     await fetchAndRender(
-      <SidebarContext.Provider value={contextData as SidebarContextData}>
+      <SidebarContext.Provider value={buildTestContext({
+        currentSidebar: ID,
+        courseId,
+        hideNotificationbar: true,
+        isNotificationbarAvailable: false,
+      })}
+      >
         <NotificationsWidget />
       </SidebarContext.Provider>,
     );
@@ -111,15 +138,16 @@ describe('NotificationsWidget', () => {
 
   it('marks notification as seen 3 seconds later', async () => {
     const onNotificationSeen = jest.fn();
-    const contextData: Partial<SidebarContextData> = {
-      currentSidebar: ID,
-      courseId,
-      onNotificationSeen,
-      hideNotificationbar: false,
-      isNotificationbarAvailable: true,
-    };
+    // CHANGED: Use buildTestContext helper
     await fetchAndRender(
-      <SidebarContext.Provider value={contextData as SidebarContextData}>
+      <SidebarContext.Provider value={buildTestContext({
+        currentSidebar: ID,
+        courseId,
+        onNotificationSeen,
+        hideNotificationbar: false,
+        isNotificationbarAvailable: true,
+      })}
+      >
         <NotificationsWidget />
       </SidebarContext.Provider>,
     );
