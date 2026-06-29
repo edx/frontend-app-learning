@@ -61,7 +61,6 @@ describe('NotificationsWidget', () => {
       unitId: 'unit-1',
       enabledPanels: ['DISCUSSIONS', 'UPSELL'],
       isDiscussionbarAvailable: false,
-      isUpsellAvailable: true,
       hideDiscussionbar: true,
       hideNotificationbar: false,
       isNotificationbarAvailable: true,
