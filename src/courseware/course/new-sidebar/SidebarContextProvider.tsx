@@ -45,8 +45,6 @@ const SidebarProvider: React.FC<Props> = ({
     return ['DISCUSSIONS'];
   }, []);
 
-  const isUpsellAvailable = !isEmpty(verifiedMode);
-
   // CHANGED: Use DISCUSSIONS as default sidebar instead of DISCUSSIONS_NOTIFICATIONS
   let initialSidebar = shouldDisplayFullScreen && sidebarKey in localStorage ? getLocalStorage(sidebarKey)
     : SIDEBARS.DISCUSSIONS.ID;
@@ -137,11 +135,10 @@ const SidebarProvider: React.FC<Props> = ({
     isNotificationbarAvailable,
     isDiscussionbarAvailable,
     enabledPanels,
-    isUpsellAvailable,
   }), [courseId, currentSidebar, notificationStatus, onNotificationSeen, shouldDisplayFullScreen,
     shouldDisplaySidebarOpen, toggleSidebar, unitId, upgradeNotificationCurrentState, hideDiscussionbar,
     hideNotificationbar, isNotificationbarAvailable, isDiscussionbarAvailable,
-    enabledPanels, isUpsellAvailable]);
+    enabledPanels]);
 
   return (
     <SidebarContext.Provider value={contextValue}>

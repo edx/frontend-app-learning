@@ -29,7 +29,6 @@ export interface SidebarContextData {
   /** Set of panel IDs enabled via config */
   enabledPanels: string[];
   isDiscussionbarAvailable: boolean;
-  isUpsellAvailable: boolean;
   // BACKWARD COMPAT
   hideDiscussionbar: boolean;
   hideNotificationbar: boolean;
