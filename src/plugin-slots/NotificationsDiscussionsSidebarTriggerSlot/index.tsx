@@ -10,20 +10,24 @@ interface Props {
   courseId: string;
 }
 
-export const NotificationsDiscussionsSidebarTriggerSlot : React.FC<Props> = ({ courseId }) => {
+export const NotificationsDiscussionsSidebarTriggerSlot: React.FC<Props> = ({ courseId }) => {
   const {
     isNewDiscussionSidebarViewEnabled,
   } = useModel('courseHomeMeta', courseId);
 
   return (
     <PluginSlot
-      id="org.openedx.frontend.learning.notifications_discussions_sidebar_trigger.v1"
-      idAliases={['notifications_discussions_sidebar_trigger_slot']}
+      id="org.openedx.frontend.learning.right_sidebar_trigger.v1"
+      idAliases={[
+        'right_sidebar_trigger_slot',
+        'org.openedx.frontend.learning.notifications_discussions_sidebar_trigger.v1',
+        'notifications_discussions_sidebar_trigger_slot',
+      ]}
       slotOptions={{
         mergeProps: true,
       }}
     >
-      {isNewDiscussionSidebarViewEnabled ? <NewSidebarTriggers /> : <SidebarTriggers /> }
+      {isNewDiscussionSidebarViewEnabled ? <NewSidebarTriggers /> : <SidebarTriggers />}
     </PluginSlot>
   );
 };
