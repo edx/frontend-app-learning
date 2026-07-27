@@ -9,7 +9,6 @@ import {
   Alert,
   breakpoints,
   Button,
-  Hyperlink,
   useWindowSize,
 } from '@openedx/paragon';
 import { CheckCircle } from '@openedx/paragon/icons';
@@ -19,18 +18,16 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import CelebrationMobile from './assets/celebration_456x328.gif';
 import CelebrationDesktop from './assets/celebration_750x540.gif';
 import certificate from '../../../generic/assets/edX_certificate.png';
-import certificateLocked from '../../../generic/assets/edX_locked_certificate.png';
-import { FormattedPricing } from '../../../generic/upgrade-button';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
 import ProgramCompletion from './ProgramCompletion';
-import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
 import DashboardFootnote from './DashboardFootnote';
 import { CourseRecommendationsSlot } from '../../../plugin-slots/CourseExitPluginSlots';
+import CourseExitUpsellSlot from '../../../plugin-slots/CourseExitUpsellSlot';
 
 const LINKEDIN_BLUE = '#2867B2';
 
@@ -74,10 +71,10 @@ const CourseCelebration = () => {
   let buttonPrefix = null;
   let buttonLocation;
   let buttonText;
-  let buttonVariant = 'outline-primary';
+  const buttonVariant = 'outline-primary';
   let buttonEvent = null;
-  let buttonSuffix = null;
-  let certificateImage = certificate;
+  const buttonSuffix = null;
+  const certificateImage = certificate;
   let footnote;
   let message;
   let certHeader;
@@ -191,56 +188,8 @@ const CourseCelebration = () => {
     case 'audit_passing':
     case 'honor_passing':
       if (verifiedMode) {
-        certHeader = intl.formatMessage(messages.certificateHeaderUpgradable);
-        message = (
-          <p>
-            <FormattedMessage
-              id="courseCelebration.certificateBody.upgradable"
-              defaultMessage="It’s not too late to upgrade. For {price} you will unlock access to all graded
-                assignments in this course. Upon completion, you will receive a verified certificate which is a
-                valuable credential to improve your job prospects and advance your career, or highlight your
-                certificate in school applications."
-              values={{ price: <FormattedPricing inline offer={offer} verifiedMode={verifiedMode} /> }}
-              description="Body text when the learner needs to upgrade to earn a certifcate and they have passed the course"
-            />
-            <br />
-            {getConfig().SUPPORT_URL_VERIFIED_CERTIFICATE && (
-              <Hyperlink
-                className="text-gray-700"
-                style={{ textDecoration: 'underline' }}
-                destination={getConfig().SUPPORT_URL_VERIFIED_CERTIFICATE}
-              >
-                {intl.formatMessage(messages.verifiedCertificateSupportLink)}
-              </Hyperlink>
-            )}
-          </p>
-        );
-        buttonText = intl.formatMessage(messages.upgradeButton);
-        buttonEvent = 'upgrade';
-        buttonLocation = verifiedMode.upgradeUrl;
-        buttonVariant = 'primary';
-        if (offer) {
-          buttonSuffix = (
-            <span className="ml-2 align-middle">
-              <FormattedMessage
-                id="courseCelebration.upgradeDiscountCodePrompt"
-                defaultMessage="Use code {code} at checkout for {percent}% off!"
-                values={{
-                  code: (<b>{offer.code}</b>),
-                  percent: offer.percentage,
-                }}
-                description="Shown if learner can use a discount code when they upgrade the course"
-              />
-            </span>
-          );
-        }
-        certificateImage = certificateLocked;
         visitEvent = 'celebration_upgrade';
-        if (verifiedMode.accessExpirationDate) {
-          footnote = <UpgradeFootnote deadline={verifiedMode.accessExpirationDate} href={verifiedMode.upgradeUrl} />;
-        } else {
-          footnote = <DashboardFootnote variant={visitEvent} />;
-        }
+        footnote = <DashboardFootnote variant={visitEvent} />;
       } else {
         visitEvent = 'celebration_audit_no_upgrade';
       }
@@ -312,6 +261,15 @@ const CourseCelebration = () => {
           )}
         </div>
         <div className="col-12 px-0 px-md-5">
+          {visitEvent === 'celebration_upgrade' && (
+            <CourseExitUpsellSlot
+              courseId={courseId}
+              org={org}
+              administrator={administrator}
+              offer={offer}
+              verifiedMode={verifiedMode}
+            />
+          )}
           {certHeader && (
           <Alert variant="success" icon={CheckCircle}>
             <div className="row w-100 m-0">
