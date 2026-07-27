@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
 
+import { COURSE_HOME_TABS_WITHOUT_COURSEWARE_SEARCH } from '../constants';
 import messages from './messages';
 import Tabs from '../generic/tabs/Tabs';
 import { CoursewareSearch, CoursewareSearchToggle } from '../course-home/courseware-search';
@@ -13,6 +14,8 @@ const CourseTabsNavigation = ({
 }) => {
   const intl = useIntl();
   const { show } = useCoursewareSearchState();
+
+  const hideCoursewareSearch = COURSE_HOME_TABS_WITHOUT_COURSEWARE_SEARCH.includes(activeTabSlug);
 
   return (
     <div id="courseTabsNavigation" className={classNames('course-tabs-navigation', className)}>
@@ -34,12 +37,14 @@ const CourseTabsNavigation = ({
               ))}
             </Tabs>
           </div>
-          <div className="search-toggle">
-            <CoursewareSearchToggle />
-          </div>
+          {!hideCoursewareSearch && (
+            <div className="search-toggle">
+              <CoursewareSearchToggle />
+            </div>
+          )}
         </div>
       </div>
-      {show && <CoursewareSearch />}
+      {show && !hideCoursewareSearch && <CoursewareSearch />}
     </div>
   );
 };

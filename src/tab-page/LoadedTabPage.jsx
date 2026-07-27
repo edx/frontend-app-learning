@@ -6,6 +6,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { useToggle } from '@openedx/paragon';
 
 import { CourseTabsNavigation } from '../course-tabs';
+import { COURSE_HOME_TABS_WITHOUT_COURSEWARE_SEARCH } from '../constants';
 import { useModel } from '../generic/model-store';
 import { AlertList } from '../generic/user-messages';
 import StreakModal from '../shared/streak-celebration';
@@ -42,6 +43,7 @@ const LoadedTabPage = ({
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
   const streakDiscountCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
   const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(streakLengthToCelebrate);
+  const isTrackSelectionTab = COURSE_HOME_TABS_WITHOUT_COURSEWARE_SEARCH.includes(activeTabSlug);
 
   return (
     <>
@@ -80,8 +82,13 @@ const LoadedTabPage = ({
             ...logistrationAlert,
           }}
         />
-        <CourseTabsNavigation tabs={tabs} className="mb-3" activeTabSlug={activeTabSlug} />
-        <div id="main-content" className="container-xl">
+        {!isTrackSelectionTab && (
+          <CourseTabsNavigation tabs={tabs} className="mb-3" activeTabSlug={activeTabSlug} />
+        )}
+        <div
+          id="main-content"
+          className={isTrackSelectionTab ? 'container-fluid px-0' : 'container-xl'}
+        >
           {children}
         </div>
       </main>

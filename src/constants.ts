@@ -9,6 +9,7 @@ export const DECODE_ROUTES = {
     '/course/:courseId/progress',
   ],
   COURSE_END: '/course/:courseId/course-end',
+  TRACK_SELECTION: '/course/:courseId/track-selection',
   COURSEWARE: [
     '/course/:courseId/:sequenceId/:unitId',
     '/course/:courseId/:sequenceId',
@@ -72,3 +73,8 @@ export const LOADED = 'loaded';
 export const FAILED = 'failed';
 export const DENIED = 'denied';
 export type StatusValue = typeof LOADING | typeof LOADED | typeof FAILED | typeof DENIED;
+
+/** Tab slugs (see TabContainer `tab` prop) where courseware content search is hidden. */
+export const COURSE_HOME_TABS_WITHOUT_COURSEWARE_SEARCH = [
+  'track-selection',
+] as const satisfies readonly string[];

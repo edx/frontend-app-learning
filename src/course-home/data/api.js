@@ -4,6 +4,20 @@ import { logInfo } from '@edx/frontend-platform/logging';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 
 /**
+ * LMS BFF redirects may return site-relative paths (e.g. /dashboard). Resolve against LMS_BASE_URL.
+ */
+export function resolveLmsRedirectUrl(redirectUrl) {
+  if (!redirectUrl) {
+    return redirectUrl;
+  }
+  if (/^https?:\/\//i.test(redirectUrl)) {
+    return redirectUrl;
+  }
+  const lmsBase = getConfig().LMS_BASE_URL.replace(/\/$/, '');
+  return redirectUrl.startsWith('/') ? `${lmsBase}${redirectUrl}` : `${lmsBase}/${redirectUrl}`;
+}
+
+/**
  * Tweak the metadata for consistency
  * @param metadata the data to normalize
  * @param rootSlug either 'courseware' or 'outline' depending on the context
@@ -192,6 +206,26 @@ export async function getProgressTabData(courseId, targetUserId) {
       // info is included in the course metadata request and will be handled there as long as this call returns
       // without an error
       return {};
+    }
+    throw error;
+  }
+}
+
+export async function getTrackSelectionTabData(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/api/course_home/track_selection/${courseId}`;
+  const redirectPending = { trackSelectionRedirect: true };
+  try {
+    const { data } = await getAuthenticatedHttpClient().get(url);
+    if (data.redirect_url) {
+      global.location.replace(resolveLmsRedirectUrl(data.redirect_url));
+      return redirectPending;
+    }
+    return camelCaseObject(data);
+  } catch (error) {
+    const httpErrorStatus = error?.response?.status;
+    if (httpErrorStatus === 404) {
+      global.location.replace(`${getConfig().LMS_BASE_URL}/course_modes/choose/${courseId}/`);
+      return redirectPending;
     }
     throw error;
   }
