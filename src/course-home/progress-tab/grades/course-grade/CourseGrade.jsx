@@ -3,8 +3,8 @@ import { useContextId } from '../../../../data/hooks';
 
 import { useModel } from '../../../../generic/model-store';
 
+import ProgressTabCourseGradeHeaderSlot from '../../../../plugin-slots/ProgressTabCourseGradeHeaderSlot';
 import CourseGradeFooter from './CourseGradeFooter';
-import CourseGradeHeader from './CourseGradeHeader';
 import GradeBar from './GradeBar';
 import CreditInformation from '../../credit-information/CreditInformation';
 
@@ -29,7 +29,9 @@ const CourseGrade = () => {
 
   return (
     <section className="text-dark-700 my-4 rounded raised-card">
-      {(gradesFeatureIsFullyLocked || gradesFeatureIsPartiallyLocked) && <CourseGradeHeader />}
+      {(gradesFeatureIsFullyLocked || gradesFeatureIsPartiallyLocked) && (
+        <ProgressTabCourseGradeHeaderSlot />
+      )}
       <div className={applyLockedOverlay} aria-hidden={gradesFeatureIsFullyLocked}>
         <div className="row w-100 m-0 p-4">
           <div className="col-12 col-sm-6 p-0 pr-sm-5.5">

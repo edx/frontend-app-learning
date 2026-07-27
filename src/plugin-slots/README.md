@@ -23,6 +23,7 @@
 * [`org.openedx.frontend.learning.progress_tab_certificate_status_main_body.v1`](./ProgressTabCertificateStatusMainBodySlot/)
 * [`org.openedx.frontend.learning.progress_tab_certificate_status_side_panel.v1`](./ProgressTabCertificateStatusSidePanelSlot/)
 * [`org.openedx.frontend.learning.progress_tab_course_grade.v1`](./ProgressTabCourseGradeSlot/)
+* [`org.openedx.frontend.learning.progress_tab_course_grade_header.v1`](./ProgressTabCourseGradeHeaderSlot/)
 * [`org.openedx.frontend.learning.progress_tab_grade_breakdown.v1`](./ProgressTabGradeBreakdownSlot/)
 * [`org.openedx.frontend.learning.progress_tab_related_links.v1`](./ProgressTabRelatedLinksSlot/)
 * [`org.openedx.frontend.learning.sequence_container.v1`](./SequenceContainerSlot/)
