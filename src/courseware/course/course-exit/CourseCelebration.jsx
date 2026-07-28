@@ -189,7 +189,7 @@ const CourseCelebration = () => {
     case 'honor_passing':
       if (verifiedMode) {
         visitEvent = 'celebration_upgrade';
-        footnote = <DashboardFootnote variant={visitEvent} />;
+        footnote = null;
       } else {
         visitEvent = 'celebration_audit_no_upgrade';
       }
