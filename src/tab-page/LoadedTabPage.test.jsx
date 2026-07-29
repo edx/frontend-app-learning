@@ -53,4 +53,11 @@ describe('Loaded Tab Page', () => {
     render(<LoadedTabPage {...mockData} courseId={courseMetadata.id} />, { store: testStore });
     expect(screen.getByTestId('StreakModal')).toBeInTheDocument();
   });
+
+  it('hides course tabs navigation on the track-selection tab', () => {
+    render(<LoadedTabPage {...mockData} activeTabSlug="track-selection" />);
+
+    expect(screen.queryByTestId('CourseTabsNavigation')).not.toBeInTheDocument();
+    expect(document.getElementById('main-content')).toHaveClass('container-fluid');
+  });
 });

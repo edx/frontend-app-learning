@@ -1,7 +1,9 @@
 import { getConfig, setConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
-import { getTimeOffsetMillis, getExamsData } from './api';
+import {
+  getTimeOffsetMillis, getExamsData, getTrackSelectionTabData, resolveLmsRedirectUrl,
+} from './api';
 import { initializeMockApp } from '../../setupTest';
 
 initializeMockApp();
@@ -173,5 +175,122 @@ describe('getExamsData', () => {
     expect(axiosMock.history.get[0].url).toBe(expectedUrl);
     expect(axiosMock.history.get[0].url).toContain('course-v1%3AedX%2BDemo%20X%2BDemo%20Course');
     expect(axiosMock.history.get[0].url).toContain('block-v1%3AedX%2BDemo%20X%2BDemo%20Course%2Btype%40sequential%2Bblock%40test%20sequence');
+  });
+});
+
+describe('resolveLmsRedirectUrl', () => {
+  let originalConfig;
+
+  beforeEach(() => {
+    originalConfig = getConfig();
+  });
+
+  afterEach(() => {
+    if (originalConfig) {
+      setConfig(originalConfig);
+    }
+  });
+
+  it('returns falsy values unchanged', () => {
+    expect(resolveLmsRedirectUrl(null)).toBeNull();
+    expect(resolveLmsRedirectUrl(undefined)).toBeUndefined();
+    expect(resolveLmsRedirectUrl('')).toBe('');
+  });
+
+  it('returns absolute URLs unchanged', () => {
+    expect(resolveLmsRedirectUrl('https://example.com/dashboard')).toBe('https://example.com/dashboard');
+    expect(resolveLmsRedirectUrl('http://example.com/dashboard')).toBe('http://example.com/dashboard');
+  });
+
+  it('resolves site-relative paths against LMS_BASE_URL', () => {
+    setConfig({ ...originalConfig, LMS_BASE_URL: 'http://localhost:18000/' });
+    expect(resolveLmsRedirectUrl('/dashboard')).toBe('http://localhost:18000/dashboard');
+  });
+
+  it('resolves paths without a leading slash against LMS_BASE_URL', () => {
+    setConfig({ ...originalConfig, LMS_BASE_URL: 'http://localhost:18000' });
+    expect(resolveLmsRedirectUrl('dashboard')).toBe('http://localhost:18000/dashboard');
+  });
+});
+
+describe('getTrackSelectionTabData', () => {
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+  let originalConfig;
+  let replaceMock;
+
+  const mockLocationReplace = () => {
+    replaceMock = jest.fn();
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      configurable: true,
+      value: { replace: replaceMock, href: '' },
+    });
+    return replaceMock;
+  };
+
+  beforeEach(() => {
+    axiosMock.reset();
+    originalConfig = getConfig();
+    mockLocationReplace();
+    setConfig({
+      ...originalConfig,
+      LMS_BASE_URL: 'http://localhost:18000',
+    });
+  });
+
+  afterEach(() => {
+    axiosMock.reset();
+    if (originalConfig) {
+      setConfig(originalConfig);
+    }
+  });
+
+  it('returns camelCased data when the API succeeds', async () => {
+    const trackSelectionUrl = `http://localhost:18000/api/course_home/track_selection/${courseId}`;
+    const apiData = {
+      course_id: courseId,
+      course_name: 'Demo Course',
+      course_modes_choose_url: '/course_modes/choose/demo/',
+      verified_mode: { min_price: '100', currency: 'usd' },
+    };
+    axiosMock.onGet(trackSelectionUrl).reply(200, apiData);
+
+    const result = await getTrackSelectionTabData(courseId);
+
+    expect(result).toEqual({
+      courseId,
+      courseName: 'Demo Course',
+      courseModesChooseUrl: '/course_modes/choose/demo/',
+      verifiedMode: { minPrice: '100', currency: 'usd' },
+    });
+  });
+
+  it('redirects and returns pending marker when API includes redirect_url', async () => {
+    const trackSelectionUrl = `http://localhost:18000/api/course_home/track_selection/${courseId}`;
+    axiosMock.onGet(trackSelectionUrl).reply(200, { redirect_url: '/dashboard' });
+
+    const result = await getTrackSelectionTabData(courseId);
+
+    expect(replaceMock).toHaveBeenCalledWith('http://localhost:18000/dashboard');
+    expect(result).toEqual({ trackSelectionRedirect: true });
+  });
+
+  it('redirects to legacy choose page on 404', async () => {
+    const trackSelectionUrl = `http://localhost:18000/api/course_home/track_selection/${courseId}`;
+    axiosMock.onGet(trackSelectionUrl).reply(404);
+
+    const result = await getTrackSelectionTabData(courseId);
+
+    expect(replaceMock).toHaveBeenCalledWith(
+      `http://localhost:18000/course_modes/choose/${courseId}/`,
+    );
+    expect(result).toEqual({ trackSelectionRedirect: true });
+  });
+
+  it('throws for non-404 HTTP errors', async () => {
+    const trackSelectionUrl = `http://localhost:18000/api/course_home/track_selection/${courseId}`;
+    axiosMock.onGet(trackSelectionUrl).reply(500);
+
+    await expect(getTrackSelectionTabData(courseId)).rejects.toThrow();
   });
 });

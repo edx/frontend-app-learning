@@ -82,4 +82,12 @@ describe('Course Tabs Navigation', () => {
 
     expect(screen.queryByTestId('courseware-search-dialog')).toBeInTheDocument();
   });
+
+  it('hides courseware search on the track-selection tab', () => {
+    useCoursewareSearchState.mockImplementation(() => ({ show: true }));
+    renderComponent({ tabs: [], activeTabSlug: 'track-selection' });
+
+    expect(screen.queryByTestId('courseware-search-dialog')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('courseware-search-open-button')).not.toBeInTheDocument();
+  });
 });
