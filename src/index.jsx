@@ -26,7 +26,9 @@ import TrackSelectionTab from './course-home/track-selection-tab/TrackSelectionT
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
 
-import { fetchDatesTab, fetchOutlineTab, fetchProgressTab, fetchTrackSelectionTab } from './course-home/data';
+import {
+  fetchDatesTab, fetchOutlineTab, fetchProgressTab, fetchTrackSelectionTab,
+} from './course-home/data';
 import { fetchCourse } from './courseware/data';
 import { store } from './store';
 import NoticesProvider from './generic/notices';
