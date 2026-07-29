@@ -79,7 +79,7 @@ const CourseCelebration = () => {
   let message;
   let certHeader;
   let visitEvent = 'celebration_generic';
-  // These cases are taken from the edx-platform `get_cert_data` function found in lms/courseware/views/views.py
+
   switch (certStatus) {
     case 'downloadable':
       certHeader = intl.formatMessage(messages.certificateHeaderDownloadable);
@@ -142,8 +142,6 @@ const CourseCelebration = () => {
       break;
     }
     case 'requesting':
-      // The requesting status needs a different button because it does a POST instead of a GET.
-      // So we don't set buttonLocation and instead define a custom button as a buttonPrefix.
       buttonEvent = 'request_cert';
       buttonPrefix = (
         <Button
@@ -171,7 +169,6 @@ const CourseCelebration = () => {
         buttonText = intl.formatMessage(messages.verifyIdentityButton);
         buttonEvent = 'verify_id';
         buttonLocation = verifyIdentityUrl;
-        // todo: check for idVerificationSupportLink null
         message = (
           <p>
             <FormattedMessage
@@ -189,16 +186,15 @@ const CourseCelebration = () => {
     case 'honor_passing':
       if (verifiedMode) {
         visitEvent = 'celebration_upgrade';
-        footnote = null;
+        if (!verifiedMode.accessExpirationDate) {
+          footnote = <DashboardFootnote variant={visitEvent} />;
+        }
       } else {
         visitEvent = 'celebration_audit_no_upgrade';
       }
       break;
     default:
       if (!canViewCertificate) {
-        //  We reuse the cert event here. Since this default state is so
-        //  Similar to the earned_not_available state, this event name should be fine
-        //  to cover the same cases.
         visitEvent = 'celebration_with_unavailable_cert';
         certHeader = intl.formatMessage(messages.certificateHeaderNotAvailable);
         const endDate = intl.formatDate(end, {
@@ -221,7 +217,11 @@ const CourseCelebration = () => {
       break;
   }
 
-  useEffect(() => logVisit(org, courseId, administrator, visitEvent), [org, courseId, administrator, visitEvent]);
+  useEffect(() => {
+    if (visitEvent !== 'celebration_upgrade') {
+      logVisit(org, courseId, administrator, visitEvent);
+    }
+  }, [org, courseId, administrator, visitEvent]);
 
   return (
     <>
