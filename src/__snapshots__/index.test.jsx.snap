@@ -169,6 +169,20 @@ exports[`app registry subscribe: APP_READY.  links App to root element 1`] = `
                   <DecodePageRoute>
                     <Tab Container
                       fetch={[Function]}
+                      slice="courseHome"
+                      tab="track-selection"
+                    >
+                      <TrackSelectionTab />
+                    </Tab Container>
+                  </DecodePageRoute>
+                }
+                path="/course/:courseId/track-selection"
+              />
+              <Route
+                element={
+                  <DecodePageRoute>
+                    <Tab Container
+                      fetch={[Function]}
                       slice="courseware"
                       tab="courseware"
                     >
