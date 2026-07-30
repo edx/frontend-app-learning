@@ -224,7 +224,7 @@ describe('Data layer integration tests', () => {
   });
 
   describe('Test fetchTrackSelectionTab', () => {
-    const trackSelectionBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/track_selection`;
+    const trackSelectionBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_modes/v1/track_selection`;
     const trackSelectionUrl = `${trackSelectionBaseUrl}/${courseId}`;
     const trackSelectionTabData = {
       course_id: courseId,

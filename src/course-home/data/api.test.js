@@ -246,7 +246,7 @@ describe('getTrackSelectionTabData', () => {
   });
 
   it('returns camelCased data when the API succeeds', async () => {
-    const trackSelectionUrl = `http://localhost:18000/api/course_home/track_selection/${courseId}`;
+    const trackSelectionUrl = `http://localhost:18000/api/course_modes/v1/track_selection/${courseId}`;
     const apiData = {
       course_id: courseId,
       course_name: 'Demo Course',
@@ -266,7 +266,7 @@ describe('getTrackSelectionTabData', () => {
   });
 
   it('redirects and returns pending marker when API includes redirect_url', async () => {
-    const trackSelectionUrl = `http://localhost:18000/api/course_home/track_selection/${courseId}`;
+    const trackSelectionUrl = `http://localhost:18000/api/course_modes/v1/track_selection/${courseId}`;
     axiosMock.onGet(trackSelectionUrl).reply(200, { redirect_url: '/dashboard' });
 
     const result = await getTrackSelectionTabData(courseId);
@@ -276,7 +276,7 @@ describe('getTrackSelectionTabData', () => {
   });
 
   it('redirects to legacy choose page on 404', async () => {
-    const trackSelectionUrl = `http://localhost:18000/api/course_home/track_selection/${courseId}`;
+    const trackSelectionUrl = `http://localhost:18000/api/course_modes/v1/track_selection/${courseId}`;
     axiosMock.onGet(trackSelectionUrl).reply(404);
 
     const result = await getTrackSelectionTabData(courseId);
@@ -288,7 +288,7 @@ describe('getTrackSelectionTabData', () => {
   });
 
   it('throws for non-404 HTTP errors', async () => {
-    const trackSelectionUrl = `http://localhost:18000/api/course_home/track_selection/${courseId}`;
+    const trackSelectionUrl = `http://localhost:18000/api/course_modes/v1/track_selection/${courseId}`;
     axiosMock.onGet(trackSelectionUrl).reply(500);
 
     await expect(getTrackSelectionTabData(courseId)).rejects.toThrow();

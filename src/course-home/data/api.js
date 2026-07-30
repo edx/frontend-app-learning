@@ -212,7 +212,7 @@ export async function getProgressTabData(courseId, targetUserId) {
 }
 
 export async function getTrackSelectionTabData(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/track_selection/${courseId}`;
+  const url = `${getConfig().LMS_BASE_URL}/api/course_modes/v1/track_selection/${courseId}`;
   const redirectPending = { trackSelectionRedirect: true };
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
