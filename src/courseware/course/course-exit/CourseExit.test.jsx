@@ -21,6 +21,29 @@ import CourseNonPassing from './CourseNonPassing';
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
 
+jest.mock('../../../plugin-slots/CourseExitUpsellSlot', () => {
+  /* eslint-disable react/prop-types */
+  const CourseExitUpsellSlotMock = ({
+    courseId,
+    org,
+    administrator,
+    offer,
+    verifiedMode,
+  }) => (
+    <div
+      data-testid="course-exit-upsell-slot"
+      data-course-id={courseId}
+      data-org={org}
+      data-administrator={String(administrator)}
+      data-offer={offer ? JSON.stringify(offer) : ''}
+      data-upgrade-url={verifiedMode?.upgradeUrl || ''}
+      data-access-expiration={verifiedMode?.accessExpirationDate || ''}
+    />
+  );
+  /* eslint-enable react/prop-types */
+  return CourseExitUpsellSlotMock;
+});
+
 describe('Course Exit Pages', () => {
   let axiosMock;
   let store;
@@ -179,7 +202,7 @@ describe('Course Exit Pages', () => {
       expect(screen.queryByRole('img', { name: 'Sample certificate' })).not.toBeInTheDocument();
     });
 
-    it('Displays upgrade link when available', async () => {
+    it('Displays upgrade slot when verified mode is available', async () => {
       setMetadata(
         {
           certificate_data: { cert_status: 'audit_passing' },
@@ -194,13 +217,22 @@ describe('Course Exit Pages', () => {
         },
       );
       await fetchAndRender(<CourseCelebration />);
-      // Keep these text checks in sync with "audit only" test below, so it doesn't end up checking for text that is
-      // never actually there, when/if the text changes.
-      expect(screen.getByText('Upgrade to pursue a verified certificate')).toBeInTheDocument();
-      expect(screen.getByText('For €600 you will unlock access', { exact: false })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'Upgrade now' })).toBeInTheDocument();
-      const node = screen.getByText('Access to this course and its materials', { exact: false });
-      expect(node.textContent).toMatch(/until August 6, 9999\./);
+      // CTA rendering is now the plugin's responsibility via CourseExitUpsellSlot
+      const slot = screen.getByTestId('course-exit-upsell-slot');
+      expect(slot).toBeInTheDocument();
+      expect(slot).toHaveAttribute('data-course-id', courseId);
+      expect(slot).toHaveAttribute('data-org', coursewareMetadata.org);
+      expect(slot).toHaveAttribute('data-administrator', 'false');
+
+      expect(slot).toHaveAttribute(
+        'data-upgrade-url',
+        'http://localhost:18130/basket/add/?sku=8CF08E5',
+      );
+
+      expect(slot).toHaveAttribute(
+        'data-access-expiration',
+        '9999-08-06T12:00:00Z',
+      );
     });
 
     it('Displays nothing if audit only', async () => {
@@ -213,10 +245,7 @@ describe('Course Exit Pages', () => {
         },
       );
       await fetchAndRender(<CourseCelebration />);
-      // Keep these queries in sync with "upgrade link" test above, so we don't end up checking for text that is
-      // never actually there, when/if the text changes.
-      expect(screen.queryByText('Upgrade to pursue a verified certificate')).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'Upgrade now' })).not.toBeInTheDocument();
+      expect(screen.queryByTestId('course-exit-upsell-slot')).not.toBeInTheDocument();
     });
 
     it('Displays LinkedIn Add to Profile button', async () => {
