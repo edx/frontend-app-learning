@@ -223,64 +223,6 @@ describe('Data layer integration tests', () => {
     );
   });
 
-  describe('Test fetchTrackSelectionTab', () => {
-    const trackSelectionBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_modes/v1/track_selection`;
-    const trackSelectionUrl = `${trackSelectionBaseUrl}/${courseId}`;
-    const trackSelectionTabData = {
-      course_id: courseId,
-      course_name: 'Demo Course',
-      course_org: 'edX',
-      course_num: 'DemoX',
-      course_modes_choose_url: '/course_modes/choose/demo/',
-      fbe_is_on: false,
-      verified_mode: { min_price: '100', currency: 'usd' },
-      audit_mode: { slug: 'audit' },
-    };
-
-    it('Should result in fetch failure if error occurs', async () => {
-      axiosMock.onGet(trackSelectionUrl).networkError();
-
-      await executeThunk(thunks.fetchTrackSelectionTab(courseId), store.dispatch);
-
-      expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().courseHome.courseStatus).toEqual('failed');
-    });
-
-    it('Should fetch, normalize, and save track selection data', async () => {
-      axiosMock.onGet(trackSelectionUrl).reply(200, trackSelectionTabData);
-
-      await executeThunk(thunks.fetchTrackSelectionTab(courseId), store.dispatch);
-
-      const state = store.getState();
-      expect(state.courseHome.courseStatus).toEqual('loaded');
-      expect(state.models.trackSelection[courseId].courseModesChooseUrl).toEqual('/course_modes/choose/demo/');
-      expect(state.models.courseHomeMeta[courseId].title).toEqual('Demo Course');
-    });
-
-    it('Should leave tab in loading state when API triggers redirect', async () => {
-      const replaceMock = jest.fn();
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        configurable: true,
-        value: { replace: replaceMock, href: '' },
-      });
-      axiosMock.onGet(trackSelectionUrl).reply(200, { redirect_url: '/dashboard' });
-
-      await executeThunk(thunks.fetchTrackSelectionTab(courseId), store.dispatch);
-
-      expect(replaceMock).toHaveBeenCalled();
-      expect(store.getState().courseHome.courseStatus).toEqual('loading');
-    });
-
-    it('Should fail when API payload is missing courseModesChooseUrl', async () => {
-      axiosMock.onGet(trackSelectionUrl).reply(200, { course_id: courseId });
-
-      await executeThunk(thunks.fetchTrackSelectionTab(courseId), store.dispatch);
-
-      expect(store.getState().courseHome.courseStatus).toEqual('failed');
-    });
-  });
-
   describe('Test saveCourseGoal', () => {
     it('Should save course goal', async () => {
       const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;

@@ -8,9 +8,8 @@
 
 ### Props
 
-None. The default plugin reads `courseId` via `useContextId()` from the learning MFE.
+* `courseId` - decoded course key from the route.
 
 ## Description
 
-Rendered on `/course/:courseId/track-selection` for RV-owned FBE track selection UI.
-POST enrollment continues to use edx-platform `course_modes_choose` URL from the track selection API payload.
+Rendered on `/course/:courseId/track-selection`. The host only supplies the route context; the configured plugin owns the track selection behavior and UI.

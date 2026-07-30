@@ -22,13 +22,10 @@ import CoursewareContainer from './courseware';
 import CoursewareRedirectLandingPage from './courseware/CoursewareRedirectLandingPage';
 import DatesTab from './course-home/dates-tab';
 import GoalUnsubscribe from './course-home/goal-unsubscribe';
-import TrackSelectionTab from './course-home/track-selection-tab/TrackSelectionTab';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
 
-import {
-  fetchDatesTab, fetchOutlineTab, fetchProgressTab, fetchTrackSelectionTab,
-} from './course-home/data';
+import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
 import { store } from './store';
 import NoticesProvider from './generic/notices';
@@ -39,6 +36,7 @@ import DecodePageRoute from './decode-page-route';
 import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
+import TrackSelectionSlot from './plugin-slots/TrackSelectionSlot';
 
 subscribe(APP_READY, () => {
   const root = createRoot(document.getElementById('root'));
@@ -129,13 +127,7 @@ subscribe(APP_READY, () => {
                     path={DECODE_ROUTES.TRACK_SELECTION}
                     element={(
                       <DecodePageRoute>
-                        <TabContainer
-                          tab="track-selection"
-                          fetch={fetchTrackSelectionTab}
-                          slice="courseHome"
-                        >
-                          <TrackSelectionTab />
-                        </TabContainer>
+                        <TrackSelectionSlot />
                       </DecodePageRoute>
                     )}
                   />

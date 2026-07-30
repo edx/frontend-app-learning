@@ -7,7 +7,6 @@ import {
   getExamsData,
   getOutlineTabData,
   getProgressTabData,
-  getTrackSelectionTabData,
   postCourseDeadlines,
   deprecatedPostCourseGoals,
   postWeeklyLearningGoal,
@@ -94,48 +93,6 @@ export function fetchDatesTab(courseId) {
 
 export function fetchProgressTab(courseId, targetUserId) {
   return fetchTab(courseId, 'progress', getProgressTabData, parseInt(targetUserId, 10) || targetUserId);
-}
-
-export function fetchTrackSelectionTab(courseId) {
-  return async (dispatch) => {
-    dispatch(fetchTabRequest({ courseId }));
-    try {
-      const data = await getTrackSelectionTabData(courseId);
-      if (data?.trackSelectionRedirect) {
-        return;
-      }
-      if (!data?.courseModesChooseUrl) {
-        dispatch(fetchTabFailure({ courseId }));
-        return;
-      }
-      dispatch(addModel({
-        modelType: 'trackSelection',
-        model: {
-          id: courseId,
-          ...data,
-        },
-      }));
-      dispatch(addModel({
-        modelType: 'courseHomeMeta',
-        model: {
-          id: courseId,
-          title: data.courseName,
-          org: data.courseOrg,
-          number: data.courseNum,
-          tabs: [],
-          courseAccess: { hasAccess: true },
-          celebrations: null,
-          originalUserIsStaff: false,
-          verifiedMode: null,
-          hasCourseAuthorAccess: false,
-        },
-      }));
-      dispatch(fetchTabSuccess({ courseId }));
-    } catch (e) {
-      dispatch(fetchTabFailure({ courseId }));
-      logError(e);
-    }
-  };
 }
 
 export function fetchOutlineTab(courseId) {
