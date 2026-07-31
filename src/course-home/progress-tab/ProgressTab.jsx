@@ -15,8 +15,8 @@ import { useGetExamsData } from './hooks';
 
 const ProgressTab = () => {
   const courseId = useContextId();
-  const { disableProgressGraph, sectionScores = [] } = useModel('progress', courseId);
-
+  const { disableProgressGraph, sectionScores } = useModel('progress', courseId);
+  
   const sequenceIds = useMemo(() => (
     sectionScores.flatMap((section) => (section.subsections)).map((subsection) => subsection.blockKey)
   ), [sectionScores]);
