@@ -20,7 +20,6 @@
 * [`org.openedx.frontend.learning.notifications_discussions_sidebar_trigger.v1`](./NotificationsDiscussionsSidebarTriggerSlot/)
 * [`org.openedx.frontend.learning.notifications_discussions_sidebar.v1`](./NotificationsDiscussionsSidebarSlot/)
 * [`org.openedx.frontend.learning.progress_certificate_status.v1`](./ProgressCertificateStatusSlot/)
-* [`org.openedx.frontend.learning.track_selection.v1`](./TrackSelectionSlot/)
 * [`org.openedx.frontend.learning.progress_tab_certificate_status_main_body.v1`](./ProgressTabCertificateStatusMainBodySlot/)
 * [`org.openedx.frontend.learning.progress_tab_certificate_status_side_panel.v1`](./ProgressTabCertificateStatusSidePanelSlot/)
 * [`org.openedx.frontend.learning.progress_tab_course_grade.v1`](./ProgressTabCourseGradeSlot/)
