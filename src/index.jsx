@@ -4,8 +4,6 @@ import {
   getConfig,
 } from '@edx/frontend-platform';
 import { AppProvider, ErrorPage, PageWrap } from '@edx/frontend-platform/react';
-// eslint-disable-next-line import/no-unresolved
-import { TrackSelectionPage } from '@edx/track-selection-plugin';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Routes, Route } from 'react-router-dom';
@@ -38,6 +36,7 @@ import DecodePageRoute from './decode-page-route';
 import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
+import TrackSelectionSlot from './plugin-slots/TrackSelectionSlot';
 
 subscribe(APP_READY, () => {
   const root = createRoot(document.getElementById('root'));
@@ -128,7 +127,7 @@ subscribe(APP_READY, () => {
                     path={DECODE_ROUTES.TRACK_SELECTION}
                     element={(
                       <DecodePageRoute>
-                        <TrackSelectionPage />
+                        <TrackSelectionSlot />
                       </DecodePageRoute>
                     )}
                   />

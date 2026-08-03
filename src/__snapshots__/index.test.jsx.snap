@@ -167,7 +167,7 @@ exports[`app registry subscribe: APP_READY.  links App to root element 1`] = `
               <Route
                 element={
                   <DecodePageRoute>
-                    <Track Selection Page />
+                    <Track Selection Slot />
                   </DecodePageRoute>
                 }
                 path="/course/:courseId/track-selection"
