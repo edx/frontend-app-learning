@@ -36,7 +36,7 @@ import DecodePageRoute from './decode-page-route';
 import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
-import TrackSelectionSlot from './plugin-slots/TrackSelectionSlot';
+import { TrackSelectionSlot } from './plugin-slots/TrackSelectionSlot';
 
 subscribe(APP_READY, () => {
   const root = createRoot(document.getElementById('root'));
