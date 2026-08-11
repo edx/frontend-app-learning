@@ -206,6 +206,9 @@ initialize({
         SHOW_UNGRADED_ASSIGNMENT_PROGRESS: process.env.SHOW_UNGRADED_ASSIGNMENT_PROGRESS || false,
         ENABLE_XPERT_AUDIT: process.env.ENABLE_XPERT_AUDIT || false,
         FEATURE_ENABLE_CHAT_V2_ENDPOINT: process.env.FEATURE_ENABLE_CHAT_V2_ENDPOINT || false,
+        // Phase B2: Learning MFE lazy xblock load (shell + batch children).
+        // Deploy as learning_mfe.enable_lazy_xblock_load → ENABLE_LAZY_XBLOCK_LOAD.
+        ENABLE_LAZY_XBLOCK_LOAD: process.env.ENABLE_LAZY_XBLOCK_LOAD || false,
       }, 'LearnerAppConfig');
     },
   },

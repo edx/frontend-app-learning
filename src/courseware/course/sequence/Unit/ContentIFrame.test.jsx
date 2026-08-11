@@ -1,15 +1,19 @@
 import { render, screen } from '@testing-library/react';
+import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import * as hooks from './hooks';
-import ContentIFrame, { IFRAME_FEATURE_POLICY } from './ContentIFrame';
+import ContentIFrame, { IFRAME_FEATURE_POLICY, testIDs } from './ContentIFrame';
 
 jest.mock('@edx/frontend-platform/react', () => ({ ErrorPage: () => <div>ErrorPage</div> }));
 
 jest.mock('@src/generic/PageLoading', () => jest.fn(() => <div>PageLoading</div>));
 
+const renderWithIntl = (ui) => render(<IntlProvider locale="en">{ui}</IntlProvider>);
+
 jest.mock('./hooks', () => ({
   useIFrameBehavior: jest.fn(),
   useModalIFrameData: jest.fn(),
+  useLazyXBlockLoad: jest.fn(),
 }));
 
 const iframeBehavior = {
@@ -42,6 +46,14 @@ const modalIFrameData = {
 
 hooks.useIFrameBehavior.mockReturnValue(iframeBehavior);
 hooks.useModalIFrameData.mockReturnValue(modalIFrameData);
+hooks.useLazyXBlockLoad.mockReturnValue({
+  progress: {
+    active: false,
+    loaded: 0,
+    total: 0,
+    error: null,
+  },
+});
 
 const props = {
   iframeUrl: 'test-iframe-url',
@@ -56,10 +68,20 @@ const props = {
 describe('ContentIFrame Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    hooks.useIFrameBehavior.mockReturnValue(iframeBehavior);
+    hooks.useModalIFrameData.mockReturnValue(modalIFrameData);
+    hooks.useLazyXBlockLoad.mockReturnValue({
+      progress: {
+        active: false,
+        loaded: 0,
+        total: 0,
+        error: null,
+      },
+    });
   });
   describe('behavior', () => {
     beforeEach(() => {
-      render(<ContentIFrame {...props} />);
+      renderWithIntl(<ContentIFrame {...props} />);
     });
     it('initializes iframe behavior hook', () => {
       expect(hooks.useIFrameBehavior).toHaveBeenCalledWith({
@@ -72,18 +94,54 @@ describe('ContentIFrame Component', () => {
     it('initializes modal iframe data', () => {
       expect(hooks.useModalIFrameData).toHaveBeenCalledWith();
     });
+    it('initializes lazy xblock load hook', () => {
+      expect(hooks.useLazyXBlockLoad).toHaveBeenCalledWith({
+        elementId: props.elementId,
+        enabled: false,
+      });
+    });
+  });
+  describe('lazy xblock progress', () => {
+    it('shows progress when enableLazyXBlockLoad and load is active', () => {
+      hooks.useLazyXBlockLoad.mockReturnValue({
+        progress: {
+          active: true,
+          loaded: 3,
+          total: 10,
+          error: null,
+        },
+      });
+      renderWithIntl(<ContentIFrame {...props} enableLazyXBlockLoad />);
+      expect(hooks.useLazyXBlockLoad).toHaveBeenCalledWith({
+        elementId: props.elementId,
+        enabled: true,
+      });
+      expect(screen.getByTestId(testIDs.lazyProgress)).toHaveTextContent('Loading question 3 of 10');
+    });
+    it('shows warning when lazy load fails', () => {
+      hooks.useLazyXBlockLoad.mockReturnValue({
+        progress: {
+          active: false,
+          loaded: 0,
+          total: 10,
+          error: 'boom',
+        },
+      });
+      renderWithIntl(<ContentIFrame {...props} enableLazyXBlockLoad />);
+      expect(screen.getByRole('alert')).toHaveTextContent('Some questions failed to load');
+    });
   });
   describe('output', () => {
     describe('if shouldShowContent', () => {
       describe('if not hasLoaded', () => {
         it('displays errorPage if showError', () => {
           hooks.useIFrameBehavior.mockReturnValueOnce({ ...iframeBehavior, showError: true });
-          render(<ContentIFrame {...props} />);
+          renderWithIntl(<ContentIFrame {...props} />);
           const errorPage = screen.getByText('ErrorPage');
           expect(errorPage).toBeInTheDocument();
         });
         it('displays PageLoading component if not showError', () => {
-          render(<ContentIFrame {...props} />);
+          renderWithIntl(<ContentIFrame {...props} />);
           const pageLoading = screen.getByText('PageLoading');
           expect(pageLoading).toBeInTheDocument();
         });
@@ -91,7 +149,7 @@ describe('ContentIFrame Component', () => {
       describe('hasLoaded', () => {
         it('does not display PageLoading or ErrorPage', () => {
           hooks.useIFrameBehavior.mockReturnValueOnce({ ...iframeBehavior, hasLoaded: true });
-          render(<ContentIFrame {...props} />);
+          renderWithIntl(<ContentIFrame {...props} />);
           const pageLoading = screen.queryByText('PageLoading');
           expect(pageLoading).toBeNull();
           const errorPage = screen.queryByText('ErrorPage');
@@ -99,7 +157,7 @@ describe('ContentIFrame Component', () => {
         });
       });
       it('display iframe with props from hooks', () => {
-        render(<ContentIFrame {...props} />);
+        renderWithIntl(<ContentIFrame {...props} />);
         const iframe = screen.getByTitle(props.title);
         expect(iframe).toBeInTheDocument();
         expect(iframe).toHaveAttribute('id', props.elementId);
@@ -112,14 +170,14 @@ describe('ContentIFrame Component', () => {
     });
     describe('if not shouldShowContent', () => {
       it('does not show PageLoading, ErrorPage, or unit-iframe-wrapper', () => {
-        render(<ContentIFrame {...{ ...props, shouldShowContent: false }} />);
+        renderWithIntl(<ContentIFrame {...{ ...props, shouldShowContent: false }} />);
         expect(screen.queryByText('PageLoading')).toBeNull();
         expect(screen.queryByText('ErrorPage')).toBeNull();
         expect(screen.queryByTitle(props.title)).toBeNull();
       });
     });
     it('does not display modal if modalOptions returns isOpen: false', () => {
-      render(<ContentIFrame {...props} />);
+      renderWithIntl(<ContentIFrame {...props} />);
       const modal = screen.queryByRole('dialog');
       expect(modal).toBeNull();
     });
@@ -138,7 +196,7 @@ describe('ContentIFrame Component', () => {
               ...modalIFrameData,
               modalOptions: { ...modalOptions.withBody, isFullscreen: true },
             });
-            render(<ContentIFrame {...props} />);
+            renderWithIntl(<ContentIFrame {...props} />);
           });
           it('displays Modal with div wrapping provided body content if modal.body is provided', () => {
             const dialog = screen.getByRole('dialog');
@@ -155,7 +213,7 @@ describe('ContentIFrame Component', () => {
                 ...modalIFrameData,
                 modalOptions: { ...modalOptions.withUrl, isFullscreen: true },
               });
-            render(<ContentIFrame {...props} />);
+            renderWithIntl(<ContentIFrame {...props} />);
           });
           it('displays Modal with iframe to provided url if modal.body is not provided', () => {
             const iframe = screen.getByTitle(modalOptions.withUrl.title);
@@ -169,7 +227,7 @@ describe('ContentIFrame Component', () => {
       describe('body modal', () => {
         beforeEach(() => {
           hooks.useModalIFrameData.mockReturnValueOnce({ ...modalIFrameData, modalOptions: modalOptions.withBody });
-          render(<ContentIFrame {...props} />);
+          renderWithIntl(<ContentIFrame {...props} />);
         });
         it('displays Modal with div wrapping provided body content if modal.body is provided', () => {
           const dialog = screen.getByRole('dialog');
@@ -182,7 +240,7 @@ describe('ContentIFrame Component', () => {
       describe('url modal', () => {
         beforeEach(() => {
           hooks.useModalIFrameData.mockReturnValueOnce({ ...modalIFrameData, modalOptions: modalOptions.withUrl });
-          render(<ContentIFrame {...props} />);
+          renderWithIntl(<ContentIFrame {...props} />);
         });
         it('displays Modal with iframe to provided url if modal.body is not provided', () => {
           const iframe = screen.getByTitle(modalOptions.withUrl.title);

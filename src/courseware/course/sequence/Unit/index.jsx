@@ -14,7 +14,10 @@ import UnitSuspense from './UnitSuspense';
 import { modelKeys, views } from './constants';
 import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
+import { shouldRequestShellRender } from './shouldRequestShellRender';
 import UnitTitleSlot from '../../../../plugin-slots/UnitTitleSlot';
+
+export { shouldRequestShellRender } from './shouldRequestShellRender';
 
 const Unit = ({
   courseId,
@@ -34,6 +37,7 @@ const Unit = ({
   const unit = useModel(modelKeys.units, id);
   const view = authenticatedUser ? views.student : views.public;
   const shouldDisplayUnitPreview = pathname.startsWith('/preview') && isOriginalUserStaff;
+  const renderModeShell = shouldRequestShellRender(unit);
 
   const getUrl = usePluginsCallback('getIFrameUrl', () => getIFrameUrl({
     id,
@@ -42,6 +46,7 @@ const Unit = ({
     examAccess,
     jumpToId: searchParams.get('jumpToId'),
     preview: shouldDisplayUnitPreview ? '1' : '0',
+    renderModeShell,
   }));
 
   const iframeUrl = getUrl();
@@ -59,6 +64,7 @@ const Unit = ({
         shouldShowContent={!shouldDisplayHonorCode && !examAccess.blockAccess}
         title={unit.title}
         courseId={courseId}
+        enableLazyXBlockLoad={renderModeShell}
       />
     </div>
   );

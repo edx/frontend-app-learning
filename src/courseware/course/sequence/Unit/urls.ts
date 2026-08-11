@@ -12,7 +12,9 @@ interface Props {
   format?: string | null;
   examAccess: { blockAccess: boolean, accessToken?: string };
   jumpToId?: string;
-  preview: boolean;
+  preview: boolean | string | number;
+  /** When true, request LMS shell placeholders for large library quizzes (Phase B2). */
+  renderModeShell?: boolean;
 }
 
 export const getIFrameUrl = ({
@@ -22,6 +24,7 @@ export const getIFrameUrl = ({
   examAccess,
   jumpToId,
   preview,
+  renderModeShell = false,
 }: Props) => {
   const xblockUrl = new URL(`${getConfig().LMS_BASE_URL}/xblock/${id}`);
   for (const [key, value] of Object.entries(iframeParams)) {
@@ -29,6 +32,9 @@ export const getIFrameUrl = ({
   }
   xblockUrl.searchParams.set('view', view);
   xblockUrl.searchParams.set('preview', String(preview));
+  if (renderModeShell) {
+    xblockUrl.searchParams.set('render_mode', 'shell');
+  }
   if (format) {
     xblockUrl.searchParams.set('format', format);
   }

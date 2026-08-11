@@ -144,6 +144,9 @@ export function normalizeSequenceMetadata(sequence) {
       contentType: unit.type,
       graded: unit.graded,
       containsContentTypeGatedContent: unit.contains_content_type_gated_content,
+      // Optional LMS field for Phase B2. Undefined when API omits it; MFE then
+      // requests shell when the feature flag is on and lets LMS decide.
+      hasLargeLibraryContent: unit.has_large_library_content,
     })),
   };
 }
