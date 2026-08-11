@@ -118,3 +118,17 @@ export async function getCoursewareOutlineSidebarToggles(courseId) {
     enable_completion_tracking: data.enable_completion_tracking || false,
   };
 }
+
+/**
+ * Batch-render selected child XBlocks under a parent (Phase B1/B2).
+ * @param {string} parentUsageKey
+ * @param {string[]} childUsageKeys - at most 10 per request (LMS XBLOCK_CHILDREN_BATCH_MAX)
+ * @returns {Promise<{parentUsageKey: string, results: Array, errors: Array}>}
+ */
+export async function getXBlockChildren(parentUsageKey, childUsageKeys) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/courseware/v1/xblock_children/`);
+  url.searchParams.set('parent_usage_key', parentUsageKey);
+  url.searchParams.set('child_usage_keys', childUsageKeys.join(','));
+  const { data } = await getAuthenticatedHttpClient().get(url.href);
+  return camelCaseObject(data);
+}
