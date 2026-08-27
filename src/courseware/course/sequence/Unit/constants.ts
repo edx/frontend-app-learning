@@ -15,15 +15,7 @@ export const messageTypes = {
   resize: 'plugin.resize',
   videoFullScreen: 'plugin.videoFullScreen',
   autoAdvance: 'plugin.autoAdvance',
-  lazyReady: 'xblock.lazy.ready',
-  lazyChildren: 'xblock.lazy.children',
 } as const;
-
-/** Max children per /api/courseware/v1/xblock_children/ request (matches LMS setting). */
-export const LAZY_XBLOCK_BATCH_SIZE = 10;
-
-/** Max parallel batch requests while loading shell children. */
-export const LAZY_XBLOCK_MAX_PARALLEL = 3;
 
 export default {
   modelKeys,
