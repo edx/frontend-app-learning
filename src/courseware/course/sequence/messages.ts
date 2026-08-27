@@ -31,16 +31,6 @@ const messages = defineMessages({
     defaultMessage: 'There is no content here.',
     description: 'Message shown when there is no content to show a user inside a learning sequence.',
   },
-  loadingLazyQuestions: {
-    id: 'learn.loading.lazy.questions',
-    defaultMessage: 'Loading question {loaded} of {total}...',
-    description: 'Progress message while batch-loading CAPA problems into a shell unit iframe',
-  },
-  lazyLoadFailed: {
-    id: 'learn.lazy.load.failed',
-    defaultMessage: 'Some questions failed to load. Try refreshing the page.',
-    description: 'Error shown when batch child loading fails for a large quiz unit',
-  },
 });
 
 export default messages;

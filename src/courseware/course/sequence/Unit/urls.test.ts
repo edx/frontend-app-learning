@@ -39,10 +39,4 @@ describe('urls module getIFrameUrl', () => {
       preview: true,
     })).toEqual('https://test-lms-url/xblock/test-id?exam_access=test-access-token&format=test-format&preview=true&recheck_access=1&show_bookmark=0&show_title=0&view=test-view');
   });
-  test('render_mode=shell is added when renderModeShell is true', () => {
-    expect(getIFrameUrl({
-      ...props,
-      renderModeShell: true,
-    })).toEqual('https://test-lms-url/xblock/test-id?exam_access=test-access-token&format=test-format&preview=false&recheck_access=1&render_mode=shell&show_bookmark=0&show_title=0&view=test-view');
-  });
 });

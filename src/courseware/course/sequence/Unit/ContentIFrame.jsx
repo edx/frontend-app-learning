@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
 
 import { ModalDialog } from '@openedx/paragon';
-import { useIntl } from '@edx/frontend-platform/i18n';
 import { ContentIFrameLoaderSlot } from '../../../../plugin-slots/ContentIFrameLoaderSlot';
 import { ContentIFrameErrorSlot } from '../../../../plugin-slots/ContentIFrameErrorSlot';
 
-import messages from '../messages';
 import * as hooks from './hooks';
 
 /**
@@ -25,7 +23,6 @@ export const IFRAME_FEATURE_POLICY = (
 export const testIDs = {
   contentIFrame: 'content-iframe-test-id',
   modalIFrame: 'modal-iframe-test-id',
-  lazyProgress: 'lazy-xblock-progress-test-id',
 };
 
 const ContentIFrame = ({
@@ -37,9 +34,7 @@ const ContentIFrame = ({
   onLoaded,
   title,
   courseId,
-  enableLazyXBlockLoad,
 }) => {
-  const { formatMessage } = useIntl();
   const {
     handleIFrameLoad,
     hasLoaded,
@@ -50,11 +45,6 @@ const ContentIFrame = ({
     id,
     iframeUrl,
     onLoaded,
-  });
-
-  const { progress: lazyProgress } = hooks.useLazyXBlockLoad({
-    elementId,
-    enabled: enableLazyXBlockLoad,
   });
 
   const {
@@ -73,9 +63,6 @@ const ContentIFrame = ({
     onLoad: handleIFrameLoad,
   };
 
-  const showLazyProgress = enableLazyXBlockLoad && lazyProgress.active && lazyProgress.total > 0;
-  const showLazyError = enableLazyXBlockLoad && Boolean(lazyProgress.error);
-
   return (
     <>
       {(shouldShowContent && !hasLoaded) && (
@@ -84,24 +71,6 @@ const ContentIFrame = ({
         ) : (
           <ContentIFrameLoaderSlot courseId={courseId} loadingMessage={loadingMessage} />
         )
-      )}
-      {shouldShowContent && showLazyProgress && (
-        <div
-          className="text-center small text-muted mb-2"
-          data-testid={testIDs.lazyProgress}
-          role="status"
-          aria-live="polite"
-        >
-          {formatMessage(messages.loadingLazyQuestions, {
-            loaded: lazyProgress.loaded,
-            total: lazyProgress.total,
-          })}
-        </div>
-      )}
-      {shouldShowContent && showLazyError && (
-        <div className="alert alert-warning" role="alert">
-          {formatMessage(messages.lazyLoadFailed)}
-        </div>
       )}
       {shouldShowContent && (
         <div className="unit-iframe-wrapper">
@@ -145,14 +114,12 @@ ContentIFrame.propTypes = {
   onLoaded: PropTypes.func,
   title: PropTypes.node.isRequired,
   courseId: PropTypes.string,
-  enableLazyXBlockLoad: PropTypes.bool,
 };
 
 ContentIFrame.defaultProps = {
   iframeUrl: null,
   onLoaded: () => ({}),
   courseId: '',
-  enableLazyXBlockLoad: false,
 };
 
 export default ContentIFrame;
