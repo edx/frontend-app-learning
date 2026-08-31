@@ -6,6 +6,7 @@ import isEmpty from 'lodash/isEmpty';
 
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
+import { getConfig } from '@edx/frontend-platform';
 import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
 import { useModel } from '../../../generic/model-store';
 import { WIDGETS } from '../../../constants';
@@ -32,11 +33,24 @@ const SidebarProvider: React.FC<Props> = ({
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
   const sidebarKey = `sidebar.${courseId}`;
 
+  // Config-driven panel list — upsell disabled by default per LP-591
+  const enabledPanels = useMemo(() => {
+    try {
+      const config = getConfig();
+      const panels = (config as any).RIGHT_SIDEBAR_PANELS;
+      if (Array.isArray(panels) && panels.length > 0) {
+        return panels.map((p: string) => p.toUpperCase());
+      }
+    } catch { /* fall through */ }
+    return ['DISCUSSIONS'];
+  }, []);
+
+  // CHANGED: Use DISCUSSIONS as default sidebar instead of DISCUSSIONS_NOTIFICATIONS
   let initialSidebar = shouldDisplayFullScreen && sidebarKey in localStorage ? getLocalStorage(sidebarKey)
-    : SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID;
+    : SIDEBARS.DISCUSSIONS.ID;
 
   if (!shouldDisplayFullScreen && isInitiallySidebarOpen) {
-    initialSidebar = SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID;
+    initialSidebar = SIDEBARS.DISCUSSIONS.ID;
   }
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
@@ -59,7 +73,8 @@ const SidebarProvider: React.FC<Props> = ({
     setHideDiscussionbar(!isDiscussionbarAvailable);
     setHideNotificationbar(!isNotificationbarAvailable);
     if (initialSidebar && currentSidebar !== initialSidebar) {
-      setCurrentSidebar(SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID);
+      // CHANGED: Use DISCUSSIONS as default
+      setCurrentSidebar(SIDEBARS.DISCUSSIONS.ID);
     }
   }, [unitId, topic]);
 
@@ -119,9 +134,11 @@ const SidebarProvider: React.FC<Props> = ({
     hideNotificationbar,
     isNotificationbarAvailable,
     isDiscussionbarAvailable,
+    enabledPanels,
   }), [courseId, currentSidebar, notificationStatus, onNotificationSeen, shouldDisplayFullScreen,
     shouldDisplaySidebarOpen, toggleSidebar, unitId, upgradeNotificationCurrentState, hideDiscussionbar,
-    hideNotificationbar, isNotificationbarAvailable, isDiscussionbarAvailable]);
+    hideNotificationbar, isNotificationbarAvailable, isDiscussionbarAvailable,
+    enabledPanels]);
 
   return (
     <SidebarContext.Provider value={contextValue}>
