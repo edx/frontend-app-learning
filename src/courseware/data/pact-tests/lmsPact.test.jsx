@@ -326,7 +326,7 @@ describe('Courseware Service', () => {
               user_has_passing_grade: boolean(false),
               course_exit_page_is_active: boolean(false),
               certificate_data: {
-                cert_status: string('audit_passing'), cert_web_view_url: null, certificate_available_date: null,
+                cert_status: string('audit_passing'), cert_web_view_url: null, certificate_available_date: null, certificate_blocked_due_to_proctoring: boolean(false),
               },
               verify_identity_url: null,
               verification_status: string('none'),
@@ -410,7 +410,7 @@ describe('Courseware Service', () => {
               is_proctored: boolean(false),
               is_hidden_after_due: boolean(false),
               position: null,
-              tag: boolean('sequential'),
+              tag: string('sequential'),
               banner_text: null,
               save_position: boolean(false),
               show_completion: boolean(false),
@@ -421,8 +421,8 @@ describe('Courseware Service', () => {
                 gated: false,
                 gated_section_name: 'Homework - Question Styles',
               }),
-              display_name: boolean('Homework - Question Styles'),
-              format: boolean('Homework'),
+              display_name: string('Homework - Question Styles'),
+              format: string('Homework'),
             },
           },
         });

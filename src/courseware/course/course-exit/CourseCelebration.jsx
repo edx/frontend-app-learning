@@ -59,6 +59,7 @@ const CourseCelebration = () => {
     certStatus,
     certWebViewUrl,
     certificateAvailableDate,
+    certificateBlockedDueToProctoring,
   } = certificateData || {};
 
   const { administrator } = getAuthenticatedUser();
@@ -82,6 +83,18 @@ const CourseCelebration = () => {
 
   switch (certStatus) {
     case 'downloadable':
+      if (certificateBlockedDueToProctoring) {
+        certHeader = intl.formatMessage(messages.certificateHeaderNotAvailable);
+        message = (
+          <p>
+            {intl.formatMessage(messages.certificateNotAvailableBodyAccessCert)}
+          </p>
+        );
+        visitEvent = 'celebration_with_unavailable_cert';
+        footnote = <DashboardFootnote variant={visitEvent} />;
+        break;
+      }
+
       certHeader = intl.formatMessage(messages.certificateHeaderDownloadable);
       message = (
         <p>

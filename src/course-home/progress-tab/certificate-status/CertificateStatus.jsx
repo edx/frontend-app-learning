@@ -43,6 +43,7 @@ const CertificateStatus = () => {
   } = useModel('progress', courseId);
   const {
     certificateAvailableDate,
+    certificateBlockedDueToProctoring,
   } = certificateData || {};
 
   const entranceExamPassed = entranceExamData?.entranceExamPassed ?? null;
@@ -135,6 +136,12 @@ const CertificateStatus = () => {
 
       case 'downloadable':
         // Certificate available, download/viewable
+        // But may be blocked due to proctoring review requirements.
+        if (certificateBlockedDueToProctoring) {
+          certCase = 'notAvailable';
+          certEventName = 'certificate_blocked_due_to_proctoring';
+          body = intl.formatMessage(messages.notAvailableBody);
+        } else {
         certCase = 'downloadable';
         body = (
           <FormattedMessage
@@ -151,6 +158,7 @@ const CertificateStatus = () => {
           certEventName = 'earned_viewable';
           buttonLocation = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
           buttonText = intl.formatMessage(messages.viewableButton);
+        }
         }
         break;
 

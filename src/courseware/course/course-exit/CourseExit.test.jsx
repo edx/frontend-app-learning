@@ -98,6 +98,7 @@ describe('Course Exit Pages', () => {
         certificate_data: {
           cert_status: 'downloadable',
           cert_web_view_url: '/certificates/cooluuidgoeshere',
+          certificate_blocked_due_to_proctoring: false,
         },
         enrollment: {
           is_active: true,
@@ -138,6 +139,7 @@ describe('Course Exit Pages', () => {
         certificate_data: {
           cert_status: 'downloadable',
           cert_web_view_url: '/certificates/cooluuidgoeshere',
+          certificate_blocked_due_to_proctoring: false,
         },
       });
       await fetchAndRender(<CourseCelebration />);
@@ -157,7 +159,7 @@ describe('Course Exit Pages', () => {
     });
 
     it('Displays request certificate link', async () => {
-      setMetadata({ certificate_data: { cert_status: 'requesting' } });
+      setMetadata({ certificate_data: { cert_status: 'requesting', certificate_blocked_due_to_proctoring: false } });
       await fetchAndRender(<CourseCelebration />);
       expect(screen.getByRole('button', { name: 'Request certificate' })).toBeInTheDocument();
     });
@@ -253,6 +255,7 @@ describe('Course Exit Pages', () => {
         certificate_data: {
           cert_status: 'downloadable',
           cert_web_view_url: '/certificates/cooluuidgoeshere',
+          certificate_blocked_due_to_proctoring: false,
         },
         linkedin_add_to_profile_url: 'https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&params',
       });
@@ -440,6 +443,7 @@ describe('Course Exit Pages', () => {
         certificate_data: {
           cert_status: 'earned_but_not_available',
           certificate_available_date: overmorrow.toISOString(),
+          certificate_blocked_due_to_proctoring: false,
         },
       }, {
         can_view_certificate: false,
