@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "build": "fedx-scripts webpack",
+    "build:validate": "fedx-scripts webpack --config webpack.validate.config.js",
     "bundlewatch": "bundlewatch",
     "i18n_extract": "fedx-scripts formatjs extract",
     "lint": "fedx-scripts eslint --ext .js --ext .jsx --ext .ts --ext .tsx .",
