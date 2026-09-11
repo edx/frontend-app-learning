@@ -300,7 +300,10 @@
           "certificate_data": {
             "cert_status": "audit_passing",
             "cert_web_view_url": null,
-            "certificate_available_date": null
+            "certificate_available_date": null,
+            "certificate_blocked_due_to_proctoring": false,
+            "certificate_block_reason": null,
+            "certificate_blocking_statuses": []
           },
           "verify_identity_url": null,
           "verification_status": "none",
@@ -436,6 +439,9 @@
             "match": "type"
           },
           "$.body.certificate_data.cert_status": {
+            "match": "type"
+          },
+          "$.body.certificate_data.certificate_blocked_due_to_proctoring": {
             "match": "type"
           },
           "$.body.verification_status": {

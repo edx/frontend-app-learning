@@ -976,6 +976,34 @@ describe('Outline Tab', () => {
       await fetchAndRender();
       expect(screen.queryByText('Congratulations! Your certificate is ready.')).toBeInTheDocument();
     });
+
+    it('shows proctoring block message without certificate action', async () => {
+      const now = new Date();
+      const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      setMetadata({ is_enrolled: true });
+      setTabData({
+        cert_data: {
+          cert_status: CERT_STATUS_TYPE.DOWNLOADABLE,
+          cert_web_view_url: null,
+          certificate_blocked_due_to_proctoring: true,
+          certificate_block_reason: 'proctoring_review_pending',
+          certificate_blocking_statuses: ['submitted'],
+        },
+      }, {
+        date_blocks: [
+          {
+            date_type: 'course-end-date',
+            date: yesterday.toISOString(),
+            title: 'End',
+          },
+        ],
+      });
+      await fetchAndRender();
+
+      expect(screen.queryByText('Certificate temporarily unavailable')).toBeInTheDocument();
+      expect(screen.queryByText(/being reviewed/)).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'View my certificate' })).not.toBeInTheDocument();
+    });
   });
 
   describe('Requesting Certificate Alert', () => {
