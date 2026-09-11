@@ -11,7 +11,7 @@ import { useModel } from '../../../generic/model-store';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
 import { requestCert } from '../../data/thunks';
-import messages from './messages';
+import messages, { getProctoringBlockedMessage } from './messages';
 import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertificateStatusSlot';
 
 const CertificateStatus = () => {
@@ -43,6 +43,8 @@ const CertificateStatus = () => {
   } = useModel('progress', courseId);
   const {
     certificateAvailableDate,
+    certificateBlockedDueToProctoring,
+    certificateBlockReason,
   } = certificateData || {};
 
   const entranceExamPassed = entranceExamData?.entranceExamPassed ?? null;
@@ -134,23 +136,29 @@ const CertificateStatus = () => {
         break;
 
       case 'downloadable':
-        // Certificate available, download/viewable
-        certCase = 'downloadable';
-        body = (
-          <FormattedMessage
-            id="progress.certificateStatus.downloadableBody"
-            defaultMessage="
-              Showcase your accomplishment on LinkedIn or your resumé today.
-              You can download your certificate now and access it any time from your
-              {dashboardLink} and {profileLink}."
-            description="Recommending an action for learner when course certificate is available"
-            values={{ dashboardLink, profileLink }}
-          />
-        );
-        if (certWebViewUrl) {
-          certEventName = 'earned_viewable';
-          buttonLocation = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
-          buttonText = intl.formatMessage(messages.viewableButton);
+        if (certificateBlockedDueToProctoring) {
+          certCase = 'proctoringBlocked';
+          certEventName = 'certificate_blocked_due_to_proctoring';
+          body = <p>{intl.formatMessage(getProctoringBlockedMessage(certificateBlockReason))}</p>;
+        } else {
+          // Certificate available, download/viewable
+          certCase = 'downloadable';
+          body = (
+            <FormattedMessage
+              id="progress.certificateStatus.downloadableBody"
+              defaultMessage="
+                Showcase your accomplishment on LinkedIn or your resumé today.
+                You can download your certificate now and access it any time from your
+                {dashboardLink} and {profileLink}."
+              description="Recommending an action for learner when course certificate is available"
+              values={{ dashboardLink, profileLink }}
+            />
+          );
+          if (certWebViewUrl) {
+            certEventName = 'earned_viewable';
+            buttonLocation = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
+            buttonText = intl.formatMessage(messages.viewableButton);
+          }
         }
         break;
 

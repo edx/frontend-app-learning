@@ -51,6 +51,8 @@ function useCertificateStatusAlert(courseId) {
     certStatus,
     certWebViewUrl,
     certificateAvailableDate,
+    certificateBlockedDueToProctoring,
+    certificateBlockReason,
   } = certData || {};
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');
   const isVerifiedEnrollmentMode = (
@@ -77,6 +79,8 @@ function useCertificateStatusAlert(courseId) {
   );
   const payload = useMemo(() => ({
     certificateAvailableDate,
+    certificateBlockedDueToProctoring,
+    certificateBlockReason,
     certURL,
     certStatus,
     courseId,
@@ -85,7 +89,8 @@ function useCertificateStatusAlert(courseId) {
     org,
     notPassingCourseEnded,
     tabs,
-  }), [certStatus, certURL, certificateAvailableDate, courseId,
+  }), [certStatus, certURL, certificateAvailableDate, certificateBlockedDueToProctoring,
+    certificateBlockReason, courseId,
     endBlock, notPassingCourseEnded, org, tabs, userTimezone]);
 
   useAlert(isVisible || notPassingCourseEnded, {

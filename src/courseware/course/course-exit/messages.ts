@@ -16,6 +16,26 @@ const messages = defineMessages({
     defaultMessage: 'Your grade and certificate status will be available soon.',
     description: 'Header displayed when course certificate is not yet available to be viewed',
   },
+  certificateHeaderProctoringBlocked: {
+    id: 'courseCelebration.certificateHeader.proctoringBlocked',
+    defaultMessage: 'Certificate temporarily unavailable',
+    description: 'Header displayed when certificate access is blocked by proctoring',
+  },
+  certificateProctoringReviewPendingBody: {
+    id: 'courseCelebration.certificateBody.proctoringReviewPending',
+    defaultMessage: 'Your certificate is temporarily unavailable while your required proctored exam is being reviewed. Please check back after the review is complete.',
+    description: 'Body displayed when a required proctored exam is pending review',
+  },
+  certificateProctoringIncompleteBody: {
+    id: 'courseCelebration.certificateBody.proctoringIncomplete',
+    defaultMessage: 'Complete your required proctored exam before accessing your certificate.',
+    description: 'Body displayed when a required proctored exam is incomplete or not attempted',
+  },
+  certificateProctoringUnavailableBody: {
+    id: 'courseCelebration.certificateBody.proctoringUnavailable',
+    defaultMessage: 'Your certificate is temporarily unavailable because the proctoring result is still being confirmed. Please check back later.',
+    description: 'Body displayed when the proctoring status cannot be confirmed',
+  },
   certificateNotAvailableBodyAccessCert: {
     id: 'courseCelebration.certificateBody.notAvailable.accessCertificate',
     defaultMessage: 'If you have earned a passing grade, your certificate will be automatically issued.',
