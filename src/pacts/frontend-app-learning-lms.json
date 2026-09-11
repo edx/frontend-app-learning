@@ -444,6 +444,12 @@
           "$.body.certificate_data.certificate_blocked_due_to_proctoring": {
             "match": "type"
           },
+          "$.body.certificate_data.certificate_block_reason": {
+            "match": "type"
+          },
+          "$.body.certificate_data.certificate_blocking_statuses": {
+            "match": "type"
+          },
           "$.body.verification_status": {
             "match": "type"
           },
