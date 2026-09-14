@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Helmet } from 'react-helmet';
@@ -12,7 +11,7 @@ import {
   Button,
   useWindowSize,
 } from '@openedx/paragon';
-import { CheckCircle } from '@openedx/paragon/icons';
+import { CheckCircle, WarningFilled } from '@openedx/paragon/icons';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
@@ -89,7 +88,7 @@ const CourseCelebration = () => {
     case 'downloadable':
       if (certificateBlockedDueToProctoring) {
         certificateAlertVariant = 'warning';
-        certificateAlertIcon = faExclamationTriangle;
+        certificateAlertIcon = WarningFilled;
         certHeader = intl.formatMessage(messages.certificateHeaderProctoringBlocked);
         if (certificateBlockReason === 'proctoring_review_pending') {
           message = <p>{intl.formatMessage(messages.certificateProctoringReviewPendingBody)}</p>;
