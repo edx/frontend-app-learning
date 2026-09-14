@@ -1002,7 +1002,7 @@ describe('Outline Tab', () => {
 
       expect(screen.queryByText('Certificate temporarily unavailable')).toBeInTheDocument();
       expect(screen.queryByText(/being reviewed/)).toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'View my certificate' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'View my certificate' })).not.toBeInTheDocument();
     });
   });
 
