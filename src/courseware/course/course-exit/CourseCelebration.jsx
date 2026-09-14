@@ -11,7 +11,7 @@ import {
   Button,
   useWindowSize,
 } from '@openedx/paragon';
-import { CheckCircle } from '@openedx/paragon/icons';
+import { CheckCircle, WarningFilled } from '@openedx/paragon/icons';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
@@ -59,6 +59,8 @@ const CourseCelebration = () => {
     certStatus,
     certWebViewUrl,
     certificateAvailableDate,
+    certificateBlockedDueToProctoring,
+    certificateBlockReason,
   } = certificateData || {};
 
   const { administrator } = getAuthenticatedUser();
@@ -78,44 +80,62 @@ const CourseCelebration = () => {
   let footnote;
   let message;
   let certHeader;
+  let certificateAlertVariant = 'success';
+  let certificateAlertIcon = CheckCircle;
   let visitEvent = 'celebration_generic';
 
   switch (certStatus) {
     case 'downloadable':
-      certHeader = intl.formatMessage(messages.certificateHeaderDownloadable);
-      message = (
-        <p>
-          <FormattedMessage
-            id="courseCelebration.certificateBody.available"
-            defaultMessage="
-              Showcase your accomplishment on LinkedIn or your resumé today.
-              You can download your certificate now and access it any time from your
-              {dashboardLink} and {profileLink}."
-            values={{ dashboardLink, profileLink }}
-            description="Recommending an action for learner when course certificate is available"
-          />
-        </p>
-      );
-      if (certWebViewUrl) {
-        buttonLocation = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
-        buttonText = intl.formatMessage(messages.viewCertificateButton);
-      }
-      if (linkedinAddToProfileUrl) {
-        buttonPrefix = (
-          <Button
-            className="mr-3"
-            href={linkedinAddToProfileUrl}
-            onClick={() => logClick(org, courseId, administrator, 'linkedin_add_to_profile')}
-            style={{ backgroundColor: LINKEDIN_BLUE, border: 'none' }}
-          >
-            <FontAwesomeIcon icon={faLinkedinIn} className="mr-3" />
-            {`${intl.formatMessage(messages.linkedinAddToProfileButton)}`}
-          </Button>
+      if (certificateBlockedDueToProctoring) {
+        certificateAlertVariant = 'warning';
+        certificateAlertIcon = WarningFilled;
+        certHeader = intl.formatMessage(messages.certificateHeaderProctoringBlocked);
+        if (certificateBlockReason === 'proctoring_review_pending') {
+          message = <p>{intl.formatMessage(messages.certificateProctoringReviewPendingBody)}</p>;
+        } else if (certificateBlockReason === 'proctored_exam_not_attempted'
+          || certificateBlockReason === 'proctored_exam_incomplete') {
+          message = <p>{intl.formatMessage(messages.certificateProctoringIncompleteBody)}</p>;
+        } else {
+          message = <p>{intl.formatMessage(messages.certificateProctoringUnavailableBody)}</p>;
+        }
+        visitEvent = 'celebration_with_unavailable_cert';
+        footnote = <DashboardFootnote variant={visitEvent} />;
+      } else {
+        certHeader = intl.formatMessage(messages.certificateHeaderDownloadable);
+        message = (
+          <p>
+            <FormattedMessage
+              id="courseCelebration.certificateBody.available"
+              defaultMessage="
+                Showcase your accomplishment on LinkedIn or your resumé today.
+                You can download your certificate now and access it any time from your
+                {dashboardLink} and {profileLink}."
+              values={{ dashboardLink, profileLink }}
+              description="Recommending an action for learner when course certificate is available"
+            />
+          </p>
         );
+        if (certWebViewUrl) {
+          buttonLocation = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
+          buttonText = intl.formatMessage(messages.viewCertificateButton);
+        }
+        if (linkedinAddToProfileUrl) {
+          buttonPrefix = (
+            <Button
+              className="mr-3"
+              href={linkedinAddToProfileUrl}
+              onClick={() => logClick(org, courseId, administrator, 'linkedin_add_to_profile')}
+              style={{ backgroundColor: LINKEDIN_BLUE, border: 'none' }}
+            >
+              <FontAwesomeIcon icon={faLinkedinIn} className="mr-3" />
+              {`${intl.formatMessage(messages.linkedinAddToProfileButton)}`}
+            </Button>
+          );
+        }
+        buttonEvent = 'view_cert';
+        visitEvent = 'celebration_with_cert';
+        footnote = <DashboardFootnote variant={visitEvent} />;
       }
-      buttonEvent = 'view_cert';
-      visitEvent = 'celebration_with_cert';
-      footnote = <DashboardFootnote variant={visitEvent} />;
       break;
     case 'earned_but_not_available': {
       const endDate = <FormattedDate value={end} day="numeric" month="long" year="numeric" />;
@@ -271,7 +291,7 @@ const CourseCelebration = () => {
             />
           )}
           {certHeader && (
-          <Alert variant="success" icon={CheckCircle}>
+          <Alert variant={certificateAlertVariant} icon={certificateAlertIcon}>
             <div className="row w-100 m-0">
               <div className="col order-1 order-md-0 pl-0 pr-0 pr-md-5">
                 <div className="h4">{certHeader}</div>
@@ -291,7 +311,7 @@ const CourseCelebration = () => {
                   {buttonSuffix}
                 </div>
               </div>
-              {certStatus !== 'unverified' && (
+              {certStatus !== 'unverified' && !certificateBlockedDueToProctoring && (
                 <div className="col-12 order-0 col-md-3 order-md-1 w-100 mb-3 p-0 text-center">
                   <img
                     src={certificateImage}

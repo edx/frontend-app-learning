@@ -56,6 +56,26 @@ const messages = defineMessages({
     defaultMessage: 'Your certificate is available!',
     description: 'Header text when the certifcate is available',
   },
+  proctoringBlockedHeader: {
+    id: 'progress.certificateStatus.proctoringBlockedHeader',
+    defaultMessage: 'Certificate temporarily unavailable',
+    description: 'Header text when certificate access is blocked by proctoring',
+  },
+  proctoringReviewPendingBody: {
+    id: 'progress.certificateStatus.proctoringReviewPendingBody',
+    defaultMessage: 'Your certificate is temporarily unavailable while your required proctored exam is being reviewed. Please check back after the review is complete.',
+    description: 'Body text when a required proctored exam is pending review',
+  },
+  proctoringIncompleteBody: {
+    id: 'progress.certificateStatus.proctoringIncompleteBody',
+    defaultMessage: 'Complete your required proctored exam before accessing your certificate.',
+    description: 'Body text when a required proctored exam is incomplete or not attempted',
+  },
+  proctoringUnavailableBody: {
+    id: 'progress.certificateStatus.proctoringUnavailableBody',
+    defaultMessage: 'Your certificate is temporarily unavailable because the proctoring result is still being confirmed. Please check back later.',
+    description: 'Body text when the proctoring status cannot be confirmed',
+  },
   viewableButton: {
     id: 'progress.certificateStatus.viewableButton',
     defaultMessage: 'View my certificate',
@@ -102,5 +122,15 @@ const messages = defineMessages({
     description: 'Body text when the learner needs to do verification to earn a certifcate',
   },
 });
+
+export const getProctoringBlockedMessage = (reason) => {
+  if (reason === 'proctoring_review_pending') {
+    return messages.proctoringReviewPendingBody;
+  }
+  if (reason === 'proctored_exam_not_attempted' || reason === 'proctored_exam_incomplete') {
+    return messages.proctoringIncompleteBody;
+  }
+  return messages.proctoringUnavailableBody;
+};
 
 export default messages;

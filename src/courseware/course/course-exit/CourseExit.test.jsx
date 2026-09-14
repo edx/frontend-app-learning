@@ -145,6 +145,25 @@ describe('Course Exit Pages', () => {
       expect(screen.getByRole('img', { name: 'Sample certificate' })).toBeInTheDocument();
     });
 
+    it('Displays proctoring block message without certificate actions', async () => {
+      setMetadata({
+        certificate_data: {
+          cert_status: 'downloadable',
+          certificate_blocked_due_to_proctoring: true,
+          certificate_block_reason: 'proctoring_review_pending',
+          certificate_blocking_statuses: ['submitted'],
+        },
+        linkedin_add_to_profile_url: 'https://www.linkedin.com/profile/add',
+      });
+      await fetchAndRender(<CourseCelebration />);
+
+      expect(screen.getByText('Certificate temporarily unavailable')).toBeInTheDocument();
+      expect(screen.getByText(/being reviewed/)).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'View my certificate' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Add to LinkedIn profile' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('img', { name: 'Sample certificate' })).not.toBeInTheDocument();
+    });
+
     it('Displays certificate is earned but unavailable message', async () => {
       setMetadata({
         certificate_data: {

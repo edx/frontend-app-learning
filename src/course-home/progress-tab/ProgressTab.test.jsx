@@ -1102,6 +1102,24 @@ describe('Progress Tab', () => {
         expect(screen.getByRole('link', { name: 'View my certificate' })).toBeInTheDocument();
       });
 
+      it('Displays proctoring block message without certificate action', async () => {
+        setTabData({
+          certificate_data: {
+            cert_status: 'downloadable',
+            certificate_blocked_due_to_proctoring: true,
+            certificate_block_reason: 'proctoring_review_pending',
+            certificate_blocking_statuses: ['submitted'],
+          },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+
+        expect(screen.getByText('Certificate temporarily unavailable')).toBeInTheDocument();
+        expect(screen.getByText(/being reviewed/)).toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: 'View my certificate' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'View my certificate' })).not.toBeInTheDocument();
+      });
+
       it('sends events on view of progress tab and on click of view certificate link', async () => {
         setTabData({
           certificate_data: {

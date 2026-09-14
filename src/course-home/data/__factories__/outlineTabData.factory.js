@@ -35,6 +35,9 @@ Factory.define('outlineTabData')
       cert_status: null,
       cert_web_view_url: null,
       certificate_available_date: null,
+      certificate_blocked_due_to_proctoring: false,
+      certificate_block_reason: null,
+      certificate_blocking_statuses: [],
     },
     course_goals: {
       goal_options: [],

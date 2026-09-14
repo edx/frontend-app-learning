@@ -14,7 +14,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import certMessages from './messages';
-import certStatusMessages from '../../../progress-tab/certificate-status/messages';
+import certStatusMessages, { getProctoringBlockedMessage } from '../../../progress-tab/certificate-status/messages';
 import { requestCert } from '../../../data/thunks';
 
 export const CERT_STATUS_TYPE = {
@@ -36,6 +36,8 @@ const CertificateStatusAlert = ({ payload }) => {
     userTimezone,
     org,
     notPassingCourseEnded,
+    certificateBlockedDueToProctoring,
+    certificateBlockReason,
     tabs,
   } = payload;
 
@@ -57,7 +59,13 @@ const CertificateStatusAlert = ({ payload }) => {
       icon: faCheckCircle,
       iconClassName: 'alert-icon text-success-500',
     };
-    if (certStatus === CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE) {
+    if (certStatus === CERT_STATUS_TYPE.DOWNLOADABLE && certificateBlockedDueToProctoring) {
+      alertProps.variant = 'warning';
+      alertProps.icon = faExclamationTriangle;
+      alertProps.iconClassName = 'alert-icon text-warning-500';
+      alertProps.header = intl.formatMessage(certStatusMessages.proctoringBlockedHeader);
+      alertProps.body = <p>{intl.formatMessage(getProctoringBlockedMessage(certificateBlockReason))}</p>;
+    } else if (certStatus === CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE) {
       const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
       const certificateAvailableDateFormatted = <FormattedDate value={certificateAvailableDate} day="numeric" month="long" year="numeric" />;
       const courseEndDateFormatted = <FormattedDate value={courseEndDate} day="numeric" month="long" year="numeric" />;
@@ -201,6 +209,8 @@ CertificateStatusAlert.propTypes = {
     userTimezone: PropTypes.string,
     org: PropTypes.string,
     notPassingCourseEnded: PropTypes.bool,
+    certificateBlockedDueToProctoring: PropTypes.bool,
+    certificateBlockReason: PropTypes.string,
     tabs: PropTypes.arrayOf(PropTypes.shape({
       tab_id: PropTypes.string,
       title: PropTypes.string,
