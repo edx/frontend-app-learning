@@ -6,15 +6,21 @@ const messages = defineMessages({
     defaultMessage: 'Discussions',
     description: 'Title text for a forum where users are able to discuss course topics',
   },
-  discussionNotificationTray: {
-    id: 'discussions.notification.tray.container',
-    defaultMessage: 'Discussion and Notification tray',
-    description: 'Discussion and Notification tray container',
+  rightSidebarTray: {
+    id: 'right.sidebar.tray.container',
+    defaultMessage: 'Right sidebar tray',
+    description: 'Right sidebar tray container for discussions, upsell, and other panels',
   },
-  notificationTitle: {
-    id: 'notification.tray.title',
-    defaultMessage: 'Notifications',
-    description: 'Title text displayed for the notification tray',
+  /** @deprecated Use rightSidebarTray instead */
+  discussionNotificationTray: {
+    id: 'discussions.notification.tray.container', // ← keep original ID
+    defaultMessage: 'Right sidebar tray',
+    description: 'Right sidebar tray container for discussions, upsell, and other panels',
+  },
+  upsellTitle: {
+    id: 'upsell.tray.title',
+    defaultMessage: 'Upgrade',
+    description: 'Title text displayed for the upgrade/upsell tray',
   },
   closeTrigger: {
     id: 'tray.close.button',
@@ -24,7 +30,7 @@ const messages = defineMessages({
   openSidebarTrigger: {
     id: 'sidebar.open.button',
     defaultMessage: 'Show sidebar tray',
-    description: 'Button to open the sidebar tray and shows notifications and didcussions',
+    description: 'Button to open the sidebar tray and shows notifications and discussions',
   },
   responsiveCloseSidebarTray: {
     id: 'responsive.close.sidebar',
