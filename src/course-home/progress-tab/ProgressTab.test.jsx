@@ -1060,8 +1060,23 @@ describe('Progress Tab', () => {
 
           expect(screen.getByText('Certificate is pending')).toBeInTheDocument();
           expect(screen.getByText(
-            'Your certificate will be issued automatically when your paid edX Plus subscription starts.',
+            'Your certificate will be issued automatically once your paid edX Plus subscription is active.',
           )).toBeInTheDocument();
+        });
+
+        it('Does not display the viewer\'s hold on the progress page of another learner', async () => {
+          holdCertificate('2026-12-01T15:00:00Z');
+          setTabData({
+            certificate_data: { cert_status: 'requesting' },
+            user_has_passing_grade: true,
+            username: 'otherstudent',
+          });
+          await executeThunk(thunks.fetchProgressTab(courseId, 10), store.dispatch);
+          await act(async () => render(<ProgressTab />, { store }));
+
+          expect(screen.getByText('Course progress for otherstudent')).toBeInTheDocument();
+          expect(screen.queryByText('Certificate is pending')).not.toBeInTheDocument();
+          expect(screen.getByRole('button', { name: 'Request certificate' })).toBeInTheDocument();
         });
 
         it('Displays the not passing message to a learner who has not passed', async () => {

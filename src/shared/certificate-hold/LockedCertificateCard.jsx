@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import { Card, Image } from '@openedx/paragon';
 
 import certificateLocked from '../../generic/assets/edX_locked_certificate.png';
 import { useModel } from '../../generic/model-store';
@@ -32,20 +33,20 @@ const LockedCertificateCard = ({ courseId }) => {
   }
 
   return (
-    <section
-      className="mb-4 p-4 border rounded bg-white d-flex flex-column"
-      style={{ gap: '2rem' }}
-      data-testid="locked-certificate-card"
-    >
-      <h2 className="h3 m-0">{lockedCertificate.header}</h2>
-      <p className="m-0 text-gray-700">{lockedCertificate.body}</p>
-      <img
-        src={certificateLocked}
-        alt=""
-        className="d-block ml-auto w-100"
-        style={{ maxWidth: '13rem' }}
-      />
-    </section>
+    <Card className="mb-4 shadow-none border-gray-200" data-testid="locked-certificate-card">
+      <Card.Header title={<h2 className="h3 m-0">{lockedCertificate.header}</h2>} />
+      <Card.Section className="text-gray-700">
+        {lockedCertificate.body}
+      </Card.Section>
+      <Card.Section className="pt-0">
+        <Image
+          src={certificateLocked}
+          alt=""
+          className="d-block ml-auto w-100"
+          style={{ maxWidth: '13rem' }}
+        />
+      </Card.Section>
+    </Card>
   );
 };
 

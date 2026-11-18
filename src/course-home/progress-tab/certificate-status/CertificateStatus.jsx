@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
@@ -18,6 +18,7 @@ import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertifi
 const CertificateStatus = () => {
   const intl = useIntl();
   const courseId = useContextId();
+  const { targetUserId } = useSelector(state => state.courseHome);
 
   const {
     entranceExamData,
@@ -67,7 +68,11 @@ const CertificateStatus = () => {
   };
 
   const dispatch = useDispatch();
-  const { administrator } = getAuthenticatedUser();
+  const { administrator, userId } = getAuthenticatedUser();
+
+  // The certificate hold comes with the course home metadata of the viewer, not of the learner whose progress
+  // this is, so it only applies to the viewer's own progress page.
+  const isCertificateLocked = !!lockedCertificate && (!targetUserId || targetUserId === userId);
 
   let certStatus;
   let certWebViewUrl;
@@ -110,7 +115,7 @@ const CertificateStatus = () => {
     certCase = 'inProgress';
     certEventName = 'has_scheduled_content';
     body = intl.formatMessage(messages[`${certCase}Body`]);
-  } else if (mode === COURSE_EXIT_MODES.celebration && lockedCertificate) {
+  } else if (mode === COURSE_EXIT_MODES.celebration && isCertificateLocked) {
     // Held during the free trial of the subscription: no button to request or view the certificate.
     certCase = 'locked';
     certEventName = 'certificate_held';

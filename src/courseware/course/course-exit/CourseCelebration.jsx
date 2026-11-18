@@ -324,7 +324,7 @@ const CourseCelebration = () => {
                   {buttonSuffix}
                 </div>
               </div>
-              {certStatus !== 'unverified' && !certificateBlockedDueToProctoring && (
+              {(lockedCertificate || certStatus !== 'unverified') && !certificateBlockedDueToProctoring && (
                 <div className="col-12 order-0 col-md-3 order-md-1 w-100 mb-3 p-0 text-center">
                   <img
                     src={certificateImage}

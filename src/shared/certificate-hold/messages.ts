@@ -13,8 +13,8 @@ const messages = defineMessages({
   },
   lockedCertificateBody: {
     id: 'certificateHold.lockedCertificate.body',
-    defaultMessage: 'Your certificate will be issued automatically when your paid edX Plus subscription starts.',
-    description: 'Shown to a learner who passed the course during the free trial of their subscription, when the date the free trial ends is not known',
+    defaultMessage: 'Your certificate will be issued automatically once your paid edX Plus subscription is active.',
+    description: 'Shown to a learner whose certificate is held without a known date: the date the free trial ends is not known, the learner cancelled during the free trial, or their subscription status could not be read',
   },
 });
 

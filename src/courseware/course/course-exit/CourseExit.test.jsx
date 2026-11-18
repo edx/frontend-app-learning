@@ -210,8 +210,17 @@ describe('Course Exit Pages', () => {
         await fetchAndRender(<CourseCelebration />);
 
         expect(screen.getByText(
-          'Your certificate will be issued automatically when your paid edX Plus subscription starts.',
+          'Your certificate will be issued automatically once your paid edX Plus subscription is active.',
         )).toBeInTheDocument();
+      });
+
+      it('Displays the locked certificate image when the certificate is unverified', async () => {
+        setMetadata({ certificate_data: { cert_status: 'unverified' } }, certificateHold('2026-12-01T15:00:00Z'));
+        await fetchAndRender(<CourseCelebration />);
+
+        expect(screen.getByText('Certificate is pending')).toBeInTheDocument();
+        expect(screen.getByRole('img', { name: 'Sample certificate' })).toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: 'Verify ID now' })).not.toBeInTheDocument();
       });
 
       it('Displays a certificate that was already issued', async () => {

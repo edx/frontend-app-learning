@@ -12,8 +12,12 @@ import messages from './messages';
  *
  *     { held: true, unlocks_on: <the end of the free trial, or null> }
  *
- * The block is only there when the certificate is held. The certificate shows as locked when it is held and the
- * learner passed, in place of the certificate status. A certificate that was already issued is never hidden.
+ * The block is only there when the certificate is held. unlocks_on is null when the end of the free trial is not
+ * known, when the learner cancelled during the free trial, or when their subscription status could not be read, so
+ * the message without a date does not say when the paid subscription starts.
+ *
+ * The certificate shows as locked when it is held and the learner passed, in place of the certificate status. A
+ * certificate that was already issued is never hidden.
  *
  * Returns { header, body }, or null when the certificate is not locked.
  */
