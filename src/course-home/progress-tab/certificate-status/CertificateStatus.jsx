@@ -10,6 +10,7 @@ import { useContextId } from '../../../data/hooks';
 import { useModel } from '../../../generic/model-store';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
+import { useLockedCertificate } from '../../../shared/certificate-hold';
 import { requestCert } from '../../data/thunks';
 import messages, { getProctoringBlockedMessage } from './messages';
 import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertificateStatusSlot';
@@ -46,6 +47,7 @@ const CertificateStatus = () => {
     certificateBlockedDueToProctoring,
     certificateBlockReason,
   } = certificateData || {};
+  const lockedCertificate = useLockedCertificate(courseId, certificateData?.certStatus, userHasPassingGrade);
 
   const entranceExamPassed = entranceExamData?.entranceExamPassed ?? null;
 
@@ -108,6 +110,11 @@ const CertificateStatus = () => {
     certCase = 'inProgress';
     certEventName = 'has_scheduled_content';
     body = intl.formatMessage(messages[`${certCase}Body`]);
+  } else if (mode === COURSE_EXIT_MODES.celebration && lockedCertificate) {
+    // Held during the free trial of the subscription: no button to request or view the certificate.
+    certCase = 'locked';
+    certEventName = 'certificate_held';
+    body = lockedCertificate.body;
   } else if (mode === COURSE_EXIT_MODES.celebration || certIsDownloadable) {
     switch (certStatus) {
       case 'requesting':
@@ -226,7 +233,9 @@ const CertificateStatus = () => {
     return null;
   }
 
-  const header = intl.formatMessage(messages[`${certCase}Header`]);
+  const header = certCase === 'locked'
+    ? lockedCertificate.header
+    : intl.formatMessage(messages[`${certCase}Header`]);
 
   const logCertificateStatusButtonClicked = () => {
     sendTrackEvent('edx.ui.lms.course_progress.certificate_status.clicked', {

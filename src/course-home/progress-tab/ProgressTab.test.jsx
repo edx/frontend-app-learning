@@ -1021,6 +1021,73 @@ describe('Progress Tab', () => {
         });
       });
 
+      describe('certificate held during the free trial of the subscription', () => {
+        const holdCertificate = (unlocksOn) => setMetadata({
+          is_enrolled: true,
+          extra_offer: { certificate_hold: { held: true, unlocks_on: unlocksOn } },
+        });
+
+        it('Displays the locked certificate with its unlock date, and no button', async () => {
+          holdCertificate('2026-12-01T15:00:00Z');
+          setTabData({
+            certificate_data: { cert_status: 'requesting' },
+            user_has_passing_grade: true,
+          });
+          await fetchAndRender();
+
+          expect(screen.getByText('Certificate is pending')).toBeInTheDocument();
+          expect(screen.getByText(
+            'Your certificate will be issued automatically on December 1, 2026 when your paid edX Plus subscription starts.',
+          )).toBeInTheDocument();
+          expect(screen.queryByRole('button', { name: 'Request certificate' })).not.toBeInTheDocument();
+          expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+            org_key: 'edX',
+            courserun_key: courseId,
+            is_staff: false,
+            track_variant: 'audit',
+            grade_variant: 'passing',
+            certificate_status_variant: 'certificate_held',
+          });
+        });
+
+        it('Displays the locked certificate without a date when the unlock date is not known', async () => {
+          holdCertificate(null);
+          setTabData({
+            certificate_data: { cert_status: 'earned_but_not_available' },
+            user_has_passing_grade: true,
+          });
+          await fetchAndRender();
+
+          expect(screen.getByText('Certificate is pending')).toBeInTheDocument();
+          expect(screen.getByText(
+            'Your certificate will be issued automatically when your paid edX Plus subscription starts.',
+          )).toBeInTheDocument();
+        });
+
+        it('Displays the not passing message to a learner who has not passed', async () => {
+          holdCertificate('2026-12-01T15:00:00Z');
+          await fetchAndRender();
+
+          expect(screen.getByText('In order to qualify for a certificate, you must have a passing grade.')).toBeInTheDocument();
+          expect(screen.queryByText('Certificate is pending')).not.toBeInTheDocument();
+        });
+
+        it('Displays a certificate that was already issued', async () => {
+          holdCertificate('2026-12-01T15:00:00Z');
+          setTabData({
+            certificate_data: {
+              cert_status: 'downloadable',
+              cert_web_view_url: '/certificates/cooluuidgoeshere',
+            },
+            user_has_passing_grade: true,
+          });
+          await fetchAndRender();
+
+          expect(screen.getByRole('link', { name: 'View my certificate' })).toBeInTheDocument();
+          expect(screen.queryByText('Certificate is pending')).not.toBeInTheDocument();
+        });
+      });
+
       it('Displays verify identity link', async () => {
         setTabData({
           certificate_data: { cert_status: 'unverified' },

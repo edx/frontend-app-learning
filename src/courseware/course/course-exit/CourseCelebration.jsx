@@ -18,6 +18,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import CelebrationMobile from './assets/celebration_456x328.gif';
 import CelebrationDesktop from './assets/celebration_750x540.gif';
 import certificate from '../../../generic/assets/edX_certificate.png';
+import certificateLocked from '../../../generic/assets/edX_locked_certificate.png';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
@@ -25,6 +26,7 @@ import ProgramCompletion from './ProgramCompletion';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
+import { useLockedCertificate } from '../../../shared/certificate-hold';
 import DashboardFootnote from './DashboardFootnote';
 import { CourseRecommendationsSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 import CourseExitUpsellSlot from '../../../plugin-slots/CourseExitUpsellSlot';
@@ -44,6 +46,7 @@ const CourseCelebration = () => {
     offer,
     relatedPrograms,
     title,
+    userHasPassingGrade,
     verifyIdentityUrl,
     verificationStatus,
   } = useModel('coursewareMeta', courseId);
@@ -62,6 +65,7 @@ const CourseCelebration = () => {
     certificateBlockedDueToProctoring,
     certificateBlockReason,
   } = certificateData || {};
+  const lockedCertificate = useLockedCertificate(courseId, certStatus, userHasPassingGrade);
 
   const { administrator } = getAuthenticatedUser();
 
@@ -76,7 +80,7 @@ const CourseCelebration = () => {
   const buttonVariant = 'outline-primary';
   let buttonEvent = null;
   const buttonSuffix = null;
-  const certificateImage = certificate;
+  let certificateImage = certificate;
   let footnote;
   let message;
   let certHeader;
@@ -84,7 +88,16 @@ const CourseCelebration = () => {
   let certificateAlertIcon = CheckCircle;
   let visitEvent = 'celebration_generic';
 
-  switch (certStatus) {
+  // 'locked' is not a certificate status: the certificate is held during the free trial of the subscription.
+  switch (lockedCertificate ? 'locked' : certStatus) {
+    case 'locked':
+      certHeader = lockedCertificate.header;
+      message = <p>{lockedCertificate.body}</p>;
+      certificateAlertIcon = null;
+      certificateImage = certificateLocked;
+      visitEvent = 'celebration_with_held_cert';
+      footnote = <DashboardFootnote variant={visitEvent} />;
+      break;
     case 'downloadable':
       if (certificateBlockedDueToProctoring) {
         certificateAlertVariant = 'warning';

@@ -1032,6 +1032,57 @@ describe('Outline Tab', () => {
     });
   });
 
+  describe('Locked Certificate Card', () => {
+    const holdCertificate = (unlocksOn) => setMetadata({
+      is_enrolled: true,
+      extra_offer: { certificate_hold: { held: true, unlocks_on: unlocksOn } },
+    });
+    const setPassingTabData = () => setTabData({
+      cert_data: {
+        cert_status: CERT_STATUS_TYPE.REQUESTING,
+        cert_web_view_url: null,
+        certificate_available_date: null,
+      },
+      user_has_passing_grade: true,
+    });
+
+    it('appears in place of the certificate alert when the certificate is held and the learner passed', async () => {
+      holdCertificate('2026-12-01T15:00:00Z');
+      setPassingTabData();
+      await fetchAndRender();
+
+      expect(screen.getByTestId('locked-certificate-card')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Certificate is pending' })).toBeInTheDocument();
+      expect(screen.getByText(
+        'Your certificate will be issued automatically on December 1, 2026 when your paid edX Plus subscription starts.',
+      )).toBeInTheDocument();
+      expect(screen.queryByText('Congratulations! Your certificate is ready.')).not.toBeInTheDocument();
+      expect(screen.queryByText('Request certificate')).not.toBeInTheDocument();
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_held.viewed', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+      });
+    });
+
+    it('does not appear when the learner has not passed', async () => {
+      holdCertificate('2026-12-01T15:00:00Z');
+      await fetchAndRender();
+
+      expect(screen.queryByTestId('locked-certificate-card')).not.toBeInTheDocument();
+      expect(sendTrackEvent).not.toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_held.viewed', expect.anything());
+    });
+
+    it('does not appear when the certificate is not held', async () => {
+      setMetadata({ is_enrolled: true });
+      setPassingTabData();
+      await fetchAndRender();
+
+      expect(screen.queryByTestId('locked-certificate-card')).not.toBeInTheDocument();
+      expect(screen.getByText('Request certificate')).toBeInTheDocument();
+    });
+  });
+
   describe('Proctoring Info Panel', () => {
     const onboardingReleaseDate = new Date();
     onboardingReleaseDate.setDate(new Date().getDate() - 7);

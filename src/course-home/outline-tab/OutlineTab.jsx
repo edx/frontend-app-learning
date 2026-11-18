@@ -27,6 +27,7 @@ import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
 import CourseHomeSectionOutlineSlot from '../../plugin-slots/CourseHomeSectionOutlineSlot';
+import { LockedCertificateCard } from '../../shared/certificate-hold';
 
 const OutlineTab = () => {
   const intl = useIntl();
@@ -171,6 +172,7 @@ const OutlineTab = () => {
         </div>
         {rootCourseId && (
           <div className="col col-12 col-md-4">
+            <LockedCertificateCard courseId={courseId} />
             <CourseOutlineTabNotificationsSlot courseId={courseId} />
             <ProctoringInfoPanel />
             { /** Defer showing the goal widget until the ProctoringInfoPanel has resolved or has been determined as
