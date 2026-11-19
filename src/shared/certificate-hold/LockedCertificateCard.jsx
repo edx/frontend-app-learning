@@ -33,7 +33,7 @@ const LockedCertificateCard = ({ courseId }) => {
   }
 
   return (
-    <Card className="mb-4 shadow-none border-gray-200" data-testid="locked-certificate-card">
+    <Card className="mb-4 shadow-none border border-gray-200" data-testid="locked-certificate-card">
       <Card.Header title={<h2 className="h3 m-0">{lockedCertificate.header}</h2>} />
       <Card.Section className="text-gray-700">
         {lockedCertificate.body}
