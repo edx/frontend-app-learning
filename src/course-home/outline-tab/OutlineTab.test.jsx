@@ -1035,7 +1035,7 @@ describe('Outline Tab', () => {
   describe('Locked Certificate Card', () => {
     const holdCertificate = (unlocksOn) => setMetadata({
       is_enrolled: true,
-      extra_offer: { certificate_hold: { held: true, unlocks_on: unlocksOn } },
+      certificate_hold: { held: true, unlocks_on: unlocksOn },
     });
     const setPassingTabData = () => setTabData({
       cert_data: {

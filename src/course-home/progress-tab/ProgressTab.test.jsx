@@ -1024,7 +1024,7 @@ describe('Progress Tab', () => {
       describe('certificate held during the free trial of the subscription', () => {
         const holdCertificate = (unlocksOn) => setMetadata({
           is_enrolled: true,
-          extra_offer: { certificate_hold: { held: true, unlocks_on: unlocksOn } },
+          certificate_hold: { held: true, unlocks_on: unlocksOn },
         });
 
         it('Displays the locked certificate with its unlock date, and no button', async () => {

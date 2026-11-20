@@ -184,7 +184,7 @@ describe('Course Exit Pages', () => {
 
     describe('certificate held during the free trial of the subscription', () => {
       const certificateHold = (unlocksOn) => ({
-        extra_offer: { certificate_hold: { held: true, unlocks_on: unlocksOn } },
+        certificate_hold: { held: true, unlocks_on: unlocksOn },
       });
 
       it('Displays the locked certificate with its unlock date, and no button', async () => {
