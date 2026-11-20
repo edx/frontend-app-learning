@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { useAlert } from '../../../../generic/user-messages';
 import { useModel } from '../../../../generic/model-store';
+import { useLockedCertificate } from '../../../../shared/certificate-hold';
 
 import { CERT_STATUS_TYPE } from './CertificateStatusAlert';
 
@@ -65,11 +66,13 @@ function useCertificateStatusAlert(courseId) {
     certURL = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
   }
   const hasAlertingCertStatus = verifyCertStatusType(certStatus);
+  const lockedCertificate = useLockedCertificate(courseId, certStatus, userHasPassingGrade);
 
   // Only show if:
-  // - there is a known cert status that we want provide status on.
+  // - there is a known cert status that we want provide status on, and the certificate is not locked (the
+  //   sidebar shows the locked certificate instead).
   // - Or the course has ended and the learner does not have a passing grade.
-  const isVisible = isEnrolled && hasAlertingCertStatus;
+  const isVisible = isEnrolled && hasAlertingCertStatus && !lockedCertificate;
   const notPassingCourseEnded = (
     isEnrolled
     && isVerifiedEnrollmentMode

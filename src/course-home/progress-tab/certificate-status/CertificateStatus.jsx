@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
@@ -10,6 +10,7 @@ import { useContextId } from '../../../data/hooks';
 import { useModel } from '../../../generic/model-store';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
+import { useLockedCertificate } from '../../../shared/certificate-hold';
 import { requestCert } from '../../data/thunks';
 import messages, { getProctoringBlockedMessage } from './messages';
 import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertificateStatusSlot';
@@ -17,6 +18,7 @@ import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertifi
 const CertificateStatus = () => {
   const intl = useIntl();
   const courseId = useContextId();
+  const { targetUserId } = useSelector(state => state.courseHome);
 
   const {
     entranceExamData,
@@ -46,6 +48,7 @@ const CertificateStatus = () => {
     certificateBlockedDueToProctoring,
     certificateBlockReason,
   } = certificateData || {};
+  const lockedCertificate = useLockedCertificate(courseId, certificateData?.certStatus, userHasPassingGrade);
 
   const entranceExamPassed = entranceExamData?.entranceExamPassed ?? null;
 
@@ -65,7 +68,11 @@ const CertificateStatus = () => {
   };
 
   const dispatch = useDispatch();
-  const { administrator } = getAuthenticatedUser();
+  const { administrator, userId } = getAuthenticatedUser();
+
+  // The certificate hold comes with the course home metadata of the viewer, not of the learner whose progress
+  // this is, so it only applies to the viewer's own progress page.
+  const isCertificateLocked = !!lockedCertificate && (!targetUserId || targetUserId === userId);
 
   let certStatus;
   let certWebViewUrl;
@@ -108,6 +115,11 @@ const CertificateStatus = () => {
     certCase = 'inProgress';
     certEventName = 'has_scheduled_content';
     body = intl.formatMessage(messages[`${certCase}Body`]);
+  } else if (mode === COURSE_EXIT_MODES.celebration && isCertificateLocked) {
+    // Held during the free trial of the subscription: no button to request or view the certificate.
+    certCase = 'locked';
+    certEventName = 'certificate_held';
+    body = lockedCertificate.body;
   } else if (mode === COURSE_EXIT_MODES.celebration || certIsDownloadable) {
     switch (certStatus) {
       case 'requesting':
@@ -226,7 +238,9 @@ const CertificateStatus = () => {
     return null;
   }
 
-  const header = intl.formatMessage(messages[`${certCase}Header`]);
+  const header = certCase === 'locked'
+    ? lockedCertificate.header
+    : intl.formatMessage(messages[`${certCase}Header`]);
 
   const logCertificateStatusButtonClicked = () => {
     sendTrackEvent('edx.ui.lms.course_progress.certificate_status.clicked', {
