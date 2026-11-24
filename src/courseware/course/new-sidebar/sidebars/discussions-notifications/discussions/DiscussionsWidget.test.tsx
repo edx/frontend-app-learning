@@ -15,8 +15,9 @@ import { executeThunk } from '../../../../../../utils';
 import { buildTopicsFromUnits } from '../../../../../data/__factories__/discussionTopics.factory';
 import { getCourseDiscussionTopics } from '../../../../../data/thunks';
 import SidebarContext from '../../../SidebarContext';
-import DiscussionsNotificationsSidebar from '../DiscussionsNotificationsSidebar';
-import DiscussionsNotificationsTrigger from '../DiscussionsNotificationsTrigger';
+import DiscussionsSidebar from '../../discussions/DiscussionsSidebar';
+// CHANGED: Import UpsellTrigger for session storage tests (logic moved from DiscussionsTrigger)
+import UpsellTrigger from '../../upsell/UpsellTrigger';
 import DiscussionsWidget from './DiscussionsWidget';
 
 initializeMockApp();
@@ -48,9 +49,12 @@ describe('DiscussionsWidget', () => {
     mockData = {
       courseId,
       unitId,
-      currentSidebar: 'NEWSIDEBAR',
+      currentSidebar: 'DISCUSSIONS',
       hideDiscussionbar: false,
       isDiscussionbarAvailable: true,
+      // ADDED: UpsellTrigger needs these to render
+      hideNotificationbar: false,
+      isNotificationbarAvailable: true,
     };
 
     axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(
@@ -86,16 +90,19 @@ describe('DiscussionsWidget', () => {
   });
 
   it('should display the Back to course button on small screens.', async () => {
+    // CHANGED: Removed sendTrackEvent assertion.
+    // DiscussionsSidebar only renders DiscussionsWidget (an iframe).
+    // sendTrackEvent was fired by NotificationsWidget, which is now in UpsellSidebar.
     sendTrackEvent.mockClear();
-    renderWithProvider(DiscussionsNotificationsSidebar, { shouldDisplayFullScreen: true });
+    renderWithProvider(DiscussionsSidebar, { shouldDisplayFullScreen: true });
     expect(screen.queryByText('Back to course')).toBeInTheDocument();
-    expect(sendTrackEvent).toHaveBeenCalledTimes(1);
   });
 
   it('should open notification tray if closed', () => {
+    // CHANGED: Use UpsellTrigger — session storage toggle logic lives there now
     (getSessionStorage as jest.Mock).mockReturnValue('closed');
 
-    renderWithProvider(() => <DiscussionsNotificationsTrigger onClick={onClickMock} />);
+    renderWithProvider(() => <UpsellTrigger onClick={onClickMock} />);
 
     const button = screen.getByRole('button');
     fireEvent.click(button);
@@ -108,9 +115,10 @@ describe('DiscussionsWidget', () => {
   });
 
   it('should close notification tray if open', () => {
+    // CHANGED: Use UpsellTrigger
     (getSessionStorage as jest.Mock).mockReturnValue('open');
 
-    renderWithProvider(() => <DiscussionsNotificationsTrigger onClick={onClickMock} />);
+    renderWithProvider(() => <UpsellTrigger onClick={onClickMock} />);
 
     const button = screen.getByRole('button');
     fireEvent.click(button);

@@ -65,8 +65,10 @@ export const ALLOW_UPSELL_MODES = [
 
 export const WIDGETS = {
   DISCUSSIONS: 'DISCUSSIONS',
-  NOTIFICATIONS: 'NOTIFICATIONS',
-} as const satisfies Readonly<{ [k: string]: string }>;
+  UPSELL: 'UPSELL',
+  /** @deprecated Use WIDGETS.UPSELL instead */
+  NOTIFICATIONS: 'UPSELL',
+} as const;
 
 export const LOADING = 'loading';
 export const LOADED = 'loaded';
